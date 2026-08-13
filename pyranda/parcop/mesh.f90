@@ -31,21 +31,21 @@
     INTEGER(c_int),  DIMENSION(:)    , ALLOCATABLE :: ix              ! Global x index of grid 
     INTEGER(c_int),  DIMENSION(:)    , ALLOCATABLE :: iy              ! Global y index of grid
     INTEGER(c_int),  DIMENSION(:)    , ALLOCATABLE :: iz              ! Global z index of grid
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: xgrid           ! x or radial location (radius => xgrid)
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: ygrid           ! y or theta location  (theta  => ygrid)
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: zgrid           ! z or phi location    (phi    => zgrid)
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: d1              ! Dimensional grid spacing in x or radius
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: d2              ! Dimensional grid spacing in y or theta 
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: d3              ! Dimensional grid spacing in z or phi 
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: GridLen         ! Minimum grid spacing
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: CellVol         ! Cell volume
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: CellVolS        ! Sharp-filtered cell volume
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: CellVolG        ! Gaussian-filtered cell volume
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: detxyz          ! Determinant of Jacobian
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: dAdx,dAdy,dAdz  ! A-row of inverse Jacobian tensor
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: dBdx,dBdy,dBdz  ! B-row of inverse Jacobian tensor
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: dCdx,dCdy,dCdz  ! C-row of inverse Jacobian tensor
-    REAL(c_double),  DIMENSION(:,:,:), ALLOCATABLE :: isinY,itanY,iR  ! Some useful metrics for spherical/cylindrical
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: xgrid           ! x or radial location (radius => xgrid)
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: ygrid           ! y or theta location  (theta  => ygrid)
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: zgrid           ! z or phi location    (phi    => zgrid)
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: d1              ! Dimensional grid spacing in x or radius
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: d2              ! Dimensional grid spacing in y or theta 
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: d3              ! Dimensional grid spacing in z or phi 
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: GridLen         ! Minimum grid spacing
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: CellVol         ! Cell volume
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: CellVolS        ! Sharp-filtered cell volume
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: CellVolG        ! Gaussian-filtered cell volume
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: detxyz          ! Determinant of Jacobian
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: dAdx,dAdy,dAdz  ! A-row of inverse Jacobian tensor
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: dBdx,dBdy,dBdz  ! B-row of inverse Jacobian tensor
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: dCdx,dCdy,dCdz  ! C-row of inverse Jacobian tensor
+    REAL(c_float),  DIMENSION(:,:,:), ALLOCATABLE :: isinY,itanY,iR  ! Some useful metrics for spherical/cylindrical
     CONTAINS
      PROCEDURE :: setup => setup_mesh
      PROCEDURE :: remove => remove_mesh
@@ -62,10 +62,10 @@
     CLASS(patch_type), INTENT(IN)  :: patch_data
     CLASS(comm_type),  INTENT(IN)  :: comm_data
     CLASS(compact_type),  INTENT(IN)  :: compact_data
-    !REAL(c_double), DIMENSION(patch_data%nx,patch_data%ny,patch_data%nz), INTENT(IN), OPTIONAL :: xpy,ypy,zpy
-    REAL(c_double), DIMENSION(:,:,:), INTENT(IN), OPTIONAL :: xpy
-    REAL(c_double), DIMENSION(:,:,:), INTENT(IN), OPTIONAL :: ypy
-    REAL(c_double), DIMENSION(:,:,:), INTENT(IN), OPTIONAL :: zpy
+    !REAL(c_float), DIMENSION(patch_data%nx,patch_data%ny,patch_data%nz), INTENT(IN), OPTIONAL :: xpy,ypy,zpy
+    REAL(c_float), DIMENSION(:,:,:), INTENT(IN), OPTIONAL :: xpy
+    REAL(c_float), DIMENSION(:,:,:), INTENT(IN), OPTIONAL :: ypy
+    REAL(c_float), DIMENSION(:,:,:), INTENT(IN), OPTIONAL :: zpy
     logical,INTENT(IN),OPTIONAL  :: custom_per
     !logical,INTENT(IN),OPTIONAL  :: custom_periodicX
     !logical,INTENT(IN),OPTIONAL  :: custom_periodicY
@@ -77,12 +77,12 @@
     integer :: custom_lo,custom_hi
     logical :: custom_periodic
     logical(c_bool) :: custom_nullop
-    REAL(c_double), PARAMETER :: half=0.5_c_double, pi=acos(-1.0_c_double)
-    REAL(c_double), DIMENSION(:,:,:), ALLOCATABLE :: dxdA,dxdB,dxdC	!  X-row of Jacobian tensor
-    REAL(c_double), DIMENSION(:,:,:), ALLOCATABLE :: dydA,dydB,dydC	!  Y-row of Jacobian tensor
-    REAL(c_double), DIMENSION(:,:,:), ALLOCATABLE :: dzdA,dzdB,dzdC	!  Z-row of Jacobian tensor
-    REAL(c_double), DIMENSION(:,:,:), ALLOCATABLE :: tmp                !  work array
-    REAL(c_double) :: dA,dB,dC,Asp,Csp
+    REAL(c_float), PARAMETER :: half=0.5_c_double, pi=acos(-1.0_c_double)
+    REAL(c_float), DIMENSION(:,:,:), ALLOCATABLE :: dxdA,dxdB,dxdC	!  X-row of Jacobian tensor
+    REAL(c_float), DIMENSION(:,:,:), ALLOCATABLE :: dydA,dydB,dydC	!  Y-row of Jacobian tensor
+    REAL(c_float), DIMENSION(:,:,:), ALLOCATABLE :: dzdA,dzdB,dzdC	!  Z-row of Jacobian tensor
+    REAL(c_float), DIMENSION(:,:,:), ALLOCATABLE :: tmp                !  work array
+    REAL(c_float) :: dA,dB,dC,Asp,Csp
     LOGICAL :: tmpPx,tmpPy,tmpPz
     INTEGER(c_int) :: i,j,k,flag,filnum,xasym,yasym,zasym
         
@@ -216,13 +216,13 @@
        d3 =        dz 
        SELECT CASE(ny)
        CASE(1)
-         CellVol = d1*2.0D0*pi*radius*d3
+         CellVol = d1*2.0E0*pi*radius*d3
 	 GridLen = MIN(d1,d3)
        CASE DEFAULT
          CellVol = d1*d2*d3
          GridLen = MIN(d1,d2,d3)  
        END SELECT
-       iR = 1.0D0 / xgrid
+       iR = 1.0E0 / xgrid
      CASE(2,4) ! Spherical
        d1 =                   dx
        d2 =            radius*dy
@@ -234,13 +234,13 @@
        CASE(1)
          SELECT CASE(nz)
          CASE(1)
-           CellVol = d1*4.0D0*pi*radius**2
+           CellVol = d1*4.0E0*pi*radius**2
            GridLen = d1
 	 END SELECT ! nz
        END SELECT ! ny
-       iR    = 1.0D0 / xgrid
-       isinY = 1.0D0 / SIN(ygrid)
-       itanY = 1.0D0 / TAN(ygrid)              
+       iR    = 1.0E0 / xgrid
+       isinY = 1.0E0 / SIN(ygrid)
+       itanY = 1.0E0 / TAN(ygrid)              
      CASE(3) ! Curvilinear
      
        dA = dx
@@ -329,9 +329,9 @@
      endif ! custom
 
        !  Special cases for 2d grids
-       IF (nx .EQ. 1) dxdA = 1.0d0
-       IF (ny .EQ. 1) dydB = 1.0d0
-       IF (nz .EQ. 1) dzdC = 1.0d0
+       IF (nx .EQ. 1) dxdA = 1.0E0
+       IF (ny .EQ. 1) dydB = 1.0E0
+       IF (nz .EQ. 1) dzdC = 1.0E0
      
        !  Get the determinant of J
        detxyz = -dxdC*dydB*dzdA+dxdB*dydC*dzdA+dxdC*dydA*dzdB &

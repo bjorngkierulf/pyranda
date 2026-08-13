@@ -12,11 +12,11 @@ PROGRAM test_pent
 
 
   INTEGER(c_int)                 :: nx,ny,nz,px,py,pz
-  REAL(c_double)                 :: x1,xn,y1,yn,z1,zn
+  REAL(c_float)                 :: x1,xn,y1,yn,z1,zn
   CHARACTER(KIND=c_char,LEN=4)   :: bx1,bxn,by1,byn,bz1,bzn
-  REAL(c_double)                 :: simtime
+  REAL(c_float)                 :: simtime
   INTEGER(c_int)                 :: world_id,world_np,mpierr
-  REAL(c_double), DIMENSION(:,:,:), ALLOCATABLE :: rho,drho
+  REAL(c_float), DIMENSION(:,:,:), ALLOCATABLE :: rho,drho
   INTEGER :: i
   INTEGER :: t1,t2,clock_rate,clock_max
   CHARACTER(LEN=32) :: arg
@@ -98,7 +98,7 @@ PROGRAM test_pent
   bz1 = "NONE"
   bzn = "NONE"
 
-  simtime = 0.0D0
+  simtime = 0.0E0
 
   ! Setup matrices/solvers
   CALL setup(0,0,MPI_COMM_WORLD,nx,ny,nz,px,py,pz,0,x1,xn,y1,yn,z1,zn,bx1,bxn,by1,byn,bz1,bzn)

@@ -36,9 +36,9 @@ CONTAINS
     IMPLICIT NONE
     INTEGER(c_int),               INTENT(IN) :: patch,level
     INTEGER(c_int),               INTENT(IN) :: color,key,coordsys,nx,ny,nz,px,py,pz
-    REAL(c_double),               INTENT(IN) :: x1,xn,y1,yn,z1,zn
+    REAL(c_float),               INTENT(IN) :: x1,xn,y1,yn,z1,zn
     CHARACTER(KIND=c_char,LEN=*), INTENT(IN) :: bx1,bxn,by1,byn,bz1,bzn
-    REAL(c_double),               INTENT(IN) :: simtime
+    REAL(c_float),               INTENT(IN) :: simtime
     CALL   patch_data(patch,level)%setup(color,key,coordsys,nx,ny,nz,px,py,pz,x1,xn,y1,yn,z1,zn,bx1,bxn,by1,byn,bz1,bzn,simtime)
     CALL    comm_data(patch,level)%setup(patch_data(patch,level))
     !CALL compact_data(patch,level)%setup(patch_data(patch,level),comm_data(patch,level))
@@ -59,7 +59,7 @@ CONTAINS
   SUBROUTINE setup_mesh_data_x3(patch,level,x1,x2,x3,mesh_per) !mesh_perX,mesh_perY,mesh_perZ)
     IMPLICIT NONE 
     INTEGER(c_int), INTENT(IN) :: patch,level
-    REAL(kind=8), DIMENSION(:,:,:), INTENT(IN) :: x1,x2,x3
+    Real(kind=4), DIMENSION(:,:,:), INTENT(IN) :: x1,x2,x3
     LOGICAL, INTENT(IN) :: mesh_per
     !LOGICAL, INTENT(IN) :: mesh_perX,mesh_perY,mesh_perZ
     CALL mesh_data(patch,level)%setup(patch_data(patch,level),&

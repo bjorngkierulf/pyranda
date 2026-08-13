@@ -20,16 +20,16 @@
     INTEGER(c_int)                 :: coordsys                      ! coordinate system: 0=Cartesian, 1=Cylindrical, 2=Spherical, 3=Curvilinear
     INTEGER(c_int)                 :: nx,ny,nz                      ! dimensions 
     INTEGER(c_int)                 :: px,py,pz                      ! processor grid
-    REAL(c_double)                 :: x1,xn,y1,yn,z1,zn             ! bounding box (cell faces or nodes)
+    REAL(c_float)                 :: x1,xn,y1,yn,z1,zn             ! bounding box (cell faces or nodes)
     CHARACTER(KIND=c_char,LEN=4)   :: bx1,bxn,by1,byn,bz1,bzn       ! boundary conditions
-    REAL(c_double)                 :: simtime                       ! simulation time
-    REAL(c_double)                 :: dt = 0.0D0                    ! n   time increment
-    REAL(c_double)                 :: dtold   = -1.0D0              ! n-1 time increment
-    REAL(c_double)                 :: dtolder = -1.0D0              ! n-2 time increment
+    REAL(c_float)                 :: simtime                       ! simulation time
+    REAL(c_float)                 :: dt = 0.0E0                    ! n   time increment
+    REAL(c_float)                 :: dtold   = -1.0E0              ! n-1 time increment
+    REAL(c_float)                 :: dtolder = -1.0E0              ! n-2 time increment
     CHARACTER(KIND=c_char, LEN=10) :: stability = '  startup '      ! stability indicator
     INTEGER(c_int), DIMENSION(3)   :: ijkstab = [0,0,0]             ! indices of stability determining node
     INTEGER(c_int)                 :: ax,ay,az                      ! per-processor dimensions
-    REAL(c_double)                 :: dx,dy,dz                      ! distances between cell centers for Cartesian meshes
+    REAL(c_float)                 :: dx,dy,dz                      ! distances between cell centers for Cartesian meshes
     INTEGER(c_int)                 :: isymX = 1                     ! multiplier for symmetric and anti-symmetric x boundaries
     INTEGER(c_int)                 :: isymY = 1                     ! multiplier for symmetric and anti-symmetric y boundaries
     INTEGER(c_int)                 :: isymZ = 1                     ! multiplier for symmetric and anti-symmetric z boundaries
@@ -49,9 +49,9 @@
     IMPLICIT NONE
     CLASS(patch_type),            INTENT(OUT) :: patch_data ! Auto deallocation of all type components
     INTEGER(c_int),               INTENT(IN)  :: color,key,coordsys,nx,ny,nz,px,py,pz
-    REAL(c_double),               INTENT(IN)  :: x1,xn,y1,yn,z1,zn
+    REAL(c_float),               INTENT(IN)  :: x1,xn,y1,yn,z1,zn
     CHARACTER(KIND=c_char,LEN=*), INTENT(IN)  :: bx1,bxn,by1,byn,bz1,bzn
-    REAL(c_double),               INTENT(IN)  :: simtime
+    REAL(c_float),               INTENT(IN)  :: simtime
      patch_data%color = color
      patch_data%key = key
      patch_data%coordsys = coordsys

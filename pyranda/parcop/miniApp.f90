@@ -12,19 +12,19 @@ PROGRAM miniApp
 
   
   INTEGER(c_int)                 :: nx,ny,nz,px,py,pz,ax,ay,az
-  REAL(c_double)                 :: x1,xn,y1,yn,z1,zn
+  REAL(c_float)                 :: x1,xn,y1,yn,z1,zn
   CHARACTER(KIND=c_char,LEN=4)   :: bx1,bxn,by1,byn,bz1,bzn
-  REAL(c_double)                 :: simtime
+  REAL(c_float)                 :: simtime
   INTEGER(c_int)                 :: world_id,world_np,mpierr
-  REAL(c_double), DIMENSION(:,:,:), ALLOCATABLE :: rho,u,v,w,et,p,rad,T,ie,Fx,Fy,Fz,tx,ty,tz,tmp,bar
-  REAL(c_double), DIMENSION(:,:,:), ALLOCATABLE :: Fxx,Fyx,Fzx,Fxy,Fyy,Fzy,Fxz,Fyz,Fzz
-  REAL(c_double), DIMENSION(:,:,:,:), ALLOCATABLE :: RHS
+  REAL(c_float), DIMENSION(:,:,:), ALLOCATABLE :: rho,u,v,w,et,p,rad,T,ie,Fx,Fy,Fz,tx,ty,tz,tmp,bar
+  REAL(c_float), DIMENSION(:,:,:), ALLOCATABLE :: Fxx,Fyx,Fzx,Fxy,Fyy,Fzy,Fxz,Fyz,Fzz
+  REAL(c_float), DIMENSION(:,:,:,:), ALLOCATABLE :: RHS
   INTEGER :: i
   INTEGER :: t1,t2,clock_rate,clock_max
   CHARACTER(LEN=32) :: arg
   INTEGER :: nargs,ii,iterations
   INTEGER :: rank,ierror
-  DOUBLE PRECISION :: dt = 0.0
+  REAL :: dt = 0.0
   !$DEF-FEXL
   
   ! MPI
@@ -102,7 +102,7 @@ PROGRAM miniApp
   bz1 = "NONE"
   bzn = "NONE"
 
-  simtime = 0.0D0
+  simtime = 0.0E0
 
   ! Setup matrices/solvers
   CALL setup(0,0,MPI_COMM_WORLD,nx,ny,nz,px,py,pz,0,x1,xn,y1,yn,z1,zn,bx1,bxn,by1,byn,bz1,bzn)
@@ -273,8 +273,8 @@ PROGRAM miniApp
 
   CONTAINS
     SUBROUTINE EOS(ie,rho,p,T)
-      DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: ie,rho
-      DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: p,t
+      REAL, DIMENSION(:,:,:), INTENT(IN) :: ie,rho
+      REAL, DIMENSION(:,:,:), INTENT(OUT) :: p,t
     END SUBROUTINE EOS
   
     
@@ -285,9 +285,9 @@ END PROGRAM miniApp
 
 
 SUBROUTINE EOS(ie,rho,p,T)
-  DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: ie,rho
-  DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: p,t
-  DOUBLE PRECISION :: gamma = 1.4
+  REAL, DIMENSION(:,:,:), INTENT(IN) :: ie,rho
+  REAL, DIMENSION(:,:,:), INTENT(OUT) :: p,t
+  REAL :: gamma = 1.4
   !$DEF-FEXL
   
   !$FEXL {dim:3,var:['p','ie','rho','t']}
@@ -300,9 +300,9 @@ END SUBROUTINE EOS
 
 SUBROUTINE EOS_nx(ie,rho,p,T,nx,ny,nz)
   INTEGER, INTENT(IN) :: nx,ny,nz
-  DOUBLE PRECISION, DIMENSION(nx,ny,nz), INTENT(IN) :: ie,rho
-  DOUBLE PRECISION, DIMENSION(nx,ny,nz), INTENT(OUT) :: p,t
-  DOUBLE PRECISION :: gamma = 1.4
+  REAL, DIMENSION(nx,ny,nz), INTENT(IN) :: ie,rho
+  REAL, DIMENSION(nx,ny,nz), INTENT(OUT) :: p,t
+  REAL :: gamma = 1.4
 
   
   p = ie / rho * (gamma - 1.0 )

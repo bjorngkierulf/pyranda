@@ -25,19 +25,19 @@
   integer, parameter :: block4_size=4
 
   type block2
-	real(kind=8), dimension(block2_size,block2_size) :: array
+	real(kind=4), dimension(block2_size,block2_size) :: array
   end type block2
 
   type vector2
-	real(kind=8), dimension(block2_size) :: array
+	real(kind=4), dimension(block2_size) :: array
   end type vector2
 
   type block4
-	real(kind=8), dimension(block4_size,block4_size) :: array
+	real(kind=4), dimension(block4_size,block4_size) :: array
   end type block4
 
   type vector4
-	real(kind=8), dimension(block4_size) :: array
+	real(kind=4), dimension(block4_size) :: array
   end type vector4
 
   interface assignment ( = )
@@ -87,17 +87,17 @@
 
   subroutine block2_gets_real(b,r)
 	type(block2), intent(out) :: b
-	real(kind=8), intent(in) :: r
+	real(kind=4), intent(in) :: r
 	b%array(1,1) = r
-	b%array(2,1) = 0.0_8
-	b%array(1,2) = 0.0_8
+	b%array(2,1) = 0.0_4
+	b%array(1,2) = 0.0_4
 	b%array(2,2) = r
 	return
   end subroutine block2_gets_real
 
   subroutine block2_gets_array(b,a)
 	type(block2), intent(out) :: b
-	real(kind=8), dimension(block2_size,block2_size), intent(in) :: a
+	real(kind=4), dimension(block2_size,block2_size), intent(in) :: a
 	b%array = a
 	return
   end subroutine block2_gets_array
@@ -113,23 +113,23 @@
 
   subroutine vector2_gets_real(v,r)
 	type(vector2), intent(out) :: v
-	real(kind=8), intent(in) :: r
+	real(kind=4), intent(in) :: r
 	v%array = r
 	return
   end subroutine vector2_gets_real
 
   subroutine vector2_gets_array(v,a)
 	type(vector2), intent(out) :: v
-	real(kind=8), dimension(block2_size), intent(in) :: a
+	real(kind=4), dimension(block2_size), intent(in) :: a
 	v%array = a
 	return
   end subroutine vector2_gets_array
 
   subroutine block4_gets_real(b,r)
 	type(block4), intent(out) :: b
-	real(kind=8), intent(in) :: r
+	real(kind=4), intent(in) :: r
 	integer :: i
-	b%array = 0.0_8
+	b%array = 0.0_4
 	do i=1,block4_size
 	  b%array(i,i) = r
     end do
@@ -138,7 +138,7 @@
 
   subroutine block4_gets_array(b,a)
 	type(block4), intent(out) :: b
-	real(kind=8), dimension(block4_size,block4_size), intent(in) :: a
+	real(kind=4), dimension(block4_size,block4_size), intent(in) :: a
 	b%array = a
 	return
   end subroutine block4_gets_array
@@ -154,14 +154,14 @@
 
   subroutine vector4_gets_real(v,r)
 	type(vector4), intent(out) :: v
-	real(kind=8), intent(in) :: r
+	real(kind=4), intent(in) :: r
 	v%array = r
 	return
   end subroutine vector4_gets_real
 
   subroutine vector4_gets_array(v,a)
 	type(vector4), intent(out) :: v
-	real(kind=8), dimension(block4_size), intent(in) :: a
+	real(kind=4), dimension(block4_size), intent(in) :: a
 	v%array = a
 	return
   end subroutine vector4_gets_array
@@ -179,7 +179,7 @@
   function block2_plus_real( a,b ) result (c)
 	type(block2) :: c
 	type(block2), intent(in) :: a
-	real(kind=8), intent(in) :: b
+	real(kind=4), intent(in) :: b
 	c%array(1,1) = a%array(1,1)+b
 	c%array(2,1) = a%array(2,1)
 	c%array(1,2) = a%array(1,2)
@@ -189,7 +189,7 @@
 
   function real_plus_block2( a,b ) result (c)
 	type(block2) :: c
-	real(kind=8), intent(in) :: a
+	real(kind=4), intent(in) :: a
 	type(block2), intent(in) :: b
 	c%array(1,1) = a+b%array(1,1)
 	c%array(2,1) = b%array(2,1)
@@ -209,14 +209,14 @@
   function vector2_plus_real( a,b ) result (c)
 	type(vector2) :: c
 	type(vector2), intent(in) :: a
-	real(kind=8), intent(in) :: b
+	real(kind=4), intent(in) :: b
 	c%array = a%array+b
 	return
   end function vector2_plus_real
 
   function real_plus_vector2( a,b ) result (c)
 	type(vector2) :: c
-	real(kind=8), intent(in) :: a
+	real(kind=4), intent(in) :: a
 	type(vector2), intent(in) :: b
 	c%array = a+b%array
 	return
@@ -233,7 +233,7 @@
   function block4_plus_real( a,b ) result (c)
 	type(block4) :: c
 	type(block4), intent(in) :: a
-	real(kind=8), intent(in) :: b
+	real(kind=4), intent(in) :: b
 	integer :: i
 	c%array = a%array
 	do i=1,block4_size
@@ -244,7 +244,7 @@
 
   function real_plus_block4( a,b ) result (c)
 	type(block4) :: c
-	real(kind=8), intent(in) :: a
+	real(kind=4), intent(in) :: a
 	type(block4), intent(in) :: b
 	integer :: i
 	c%array = b%array
@@ -265,14 +265,14 @@
   function vector4_plus_real( a,b ) result (c)
 	type(vector4) :: c
 	type(vector4), intent(in) :: a
-	real(kind=8), intent(in) :: b
+	real(kind=4), intent(in) :: b
 	c%array = a%array+b
 	return
   end function vector4_plus_real
 
   function real_plus_vector4( a,b ) result (c)
 	type(vector4) :: c
-	real(kind=8), intent(in) :: a
+	real(kind=4), intent(in) :: a
 	type(vector4), intent(in) :: b
 	c%array = a+b%array
 	return
@@ -291,7 +291,7 @@
   function block2_minus_real( a,b ) result (c)
 	type(block2) :: c
 	type(block2), intent(in) :: a
-	real(kind=8), intent(in) :: b
+	real(kind=4), intent(in) :: b
 	c%array(1,1) = a%array(1,1)-b
 	c%array(2,1) = a%array(2,1)
 	c%array(1,2) = a%array(1,2)
@@ -301,7 +301,7 @@
 
   function real_minus_block2( a,b ) result (c)
 	type(block2) :: c
-	real(kind=8), intent(in) :: a
+	real(kind=4), intent(in) :: a
 	type(block2), intent(in) :: b
 	c%array(1,1) = a-b%array(1,1)
 	c%array(2,1) = -b%array(2,1)
@@ -321,14 +321,14 @@
   function vector2_minus_real( a,b ) result (c)
 	type(vector2) :: c
 	type(vector2), intent(in) :: a
-	real(kind=8), intent(in) :: b
+	real(kind=4), intent(in) :: b
 	c%array = a%array-b
 	return
   end function vector2_minus_real
 
   function real_minus_vector2( a,b ) result (c)
 	type(vector2) :: c
-	real(kind=8), intent(in) :: a
+	real(kind=4), intent(in) :: a
 	type(vector2), intent(in) :: b
 	c%array = a-b%array
 	return
@@ -359,7 +359,7 @@
   function block4_minus_real( a,b ) result (c)
 	type(block4) :: c
 	type(block4), intent(in) :: a
-	real(kind=8), intent(in) :: b
+	real(kind=4), intent(in) :: b
 	integer :: i
 	c%array = a%array
 	do i=1,block4_size
@@ -370,7 +370,7 @@
 
   function real_minus_block4( a,b ) result (c)
 	type(block4) :: c
-	real(kind=8), intent(in) :: a
+	real(kind=4), intent(in) :: a
 	type(block4), intent(in) :: b
 	integer :: i
 	c%array = b%array
@@ -391,14 +391,14 @@
   function vector4_minus_real( a,b ) result (c)
 	type(vector4) :: c
 	type(vector4), intent(in) :: a
-	real(kind=8), intent(in) :: b
+	real(kind=4), intent(in) :: b
 	c%array = a%array-b
 	return
   end function vector4_minus_real
 
   function real_minus_vector4( a,b ) result (c)
 	type(vector4) :: c
-	real(kind=8), intent(in) :: a
+	real(kind=4), intent(in) :: a
 	type(vector4), intent(in) :: b
 	c%array = a-b%array
 	return
@@ -429,7 +429,7 @@
   end function block2_times_block2
 
   function vector2_times_vector2( a,b ) result (c)
-	real(kind=8) :: c
+	real(kind=4) :: c
 	type(vector2), intent(in) :: a
 	type(vector2), intent(in) :: b
 	c = dot_product(a%array,b%array)
@@ -455,14 +455,14 @@
   function block2_times_real( a,b ) result (c)
 	type(block2) :: c
 	type(block2), intent(in) :: a
-	real(kind=8), intent(in) :: b
+	real(kind=4), intent(in) :: b
 	c%array = b*a%array
 	return
   end function block2_times_real
 
   function real_times_block2( a,b ) result (c)
 	type(block2) :: c
-	real(kind=8), intent(in) :: a
+	real(kind=4), intent(in) :: a
 	type(block2), intent(in) :: b
 	c%array = a*b%array
 	return
@@ -471,14 +471,14 @@
   function vector2_times_real( a,b ) result (c)
 	type(vector2) :: c
 	type(vector2), intent(in) :: a
-	real(kind=8), intent(in) :: b
+	real(kind=4), intent(in) :: b
 	c%array = b*a%array
 	return
   end function vector2_times_real
 
   function real_times_vector2( a,b ) result (c)
 	type(vector2) :: c
-	real(kind=8), intent(in) :: a
+	real(kind=4), intent(in) :: a
 	type(vector2), intent(in) :: b
 	c%array = a*b%array
 	return
@@ -493,7 +493,7 @@
   end function block4_times_block4
 
   function vector4_times_vector4( a,b ) result (c)
-	real(kind=8) :: c
+	real(kind=4) :: c
 	type(vector4), intent(in) :: a
 	type(vector4), intent(in) :: b
 	c = dot_product(a%array,b%array)
@@ -519,14 +519,14 @@
   function block4_times_real( a,b ) result (c)
 	type(block4) :: c
 	type(block4), intent(in) :: a
-	real(kind=8), intent(in) :: b
+	real(kind=4), intent(in) :: b
 	c%array = b*a%array
 	return
   end function block4_times_real
 
   function real_times_block4( a,b ) result (c)
 	type(block4) :: c
-	real(kind=8), intent(in) :: a
+	real(kind=4), intent(in) :: a
 	type(block4), intent(in) :: b
 	c%array = a*b%array
 	return
@@ -535,14 +535,14 @@
   function vector4_times_real( a,b ) result (c)
 	type(vector4) :: c
 	type(vector4), intent(in) :: a
-	real(kind=8), intent(in) :: b
+	real(kind=4), intent(in) :: b
 	c%array = b*a%array
 	return
   end function vector4_times_real
 
   function real_times_vector4( a,b ) result (c)
 	type(vector4) :: c
-	real(kind=8), intent(in) :: a
+	real(kind=4), intent(in) :: a
 	type(vector4), intent(in) :: b
 	c%array = a*b%array
 	return
@@ -580,14 +580,14 @@
   function block2_div_real( a,b ) result (c)
 	type(block2) :: c
 	type(block2), intent(in) :: a
-	real(kind=8), intent(in) :: b
+	real(kind=4), intent(in) :: b
 	c%array = a%array / b
 	return
   end function block2_div_real
 
   function real_div_block2( a,b ) result (c)
 	type(block2) :: c
-	real(kind=8), intent(in) :: a
+	real(kind=4), intent(in) :: a
 	type(block2), intent(in) :: b
 	c = (.inv.b) * a
 	return
@@ -633,14 +633,14 @@
   function block4_div_real( a,b ) result (c)
 	type(block4) :: c
 	type(block4), intent(in) :: a
-	real(kind=8), intent(in) :: b
+	real(kind=4), intent(in) :: b
 	c%array = a%array / b
 	return
   end function block4_div_real
 
   function real_div_block4( a,b ) result (c)
 	type(block4) :: c
-	real(kind=8), intent(in) :: a
+	real(kind=4), intent(in) :: a
 	type(block4), intent(in) :: b
 	c = (.inv.b) * a
 	return

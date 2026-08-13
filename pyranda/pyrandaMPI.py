@@ -24,6 +24,7 @@ LAST_LEVEL = 0
 PATCH_MAX = 100
 LEVEL_MAX = 10
 
+precision=numpy.float32
 class pyrandaMPI():
 
     def __init__(self,mesh,comm=None):
@@ -247,11 +248,11 @@ class pyrandaMPI():
         parcop.parcop.set_patch( self.patch, self.level )
 
     def emptyScalar(self):
-        return numpy.zeros( self.chunk_3d_size, dtype=numpy.float64, order='F')*0.0
+        return numpy.zeros( self.chunk_3d_size, dtype=precision, order='F')*0.0
 
     def emptyVector(self,rank=3):
         blk_size = numpy.append(self.chunk_3d_size,rank)
-        return numpy.zeros( blk_size, dtype=numpy.float64, order='F')*0.0
+        return numpy.zeros( blk_size, dtype=precision, order='F')*0.0
 
     
     def gather2D(self,idata,com,n1,n2,g1,g2):
@@ -260,7 +261,7 @@ class pyrandaMPI():
           global array of gdata(n1,n2)
         """        
 
-        ldata = numpy.zeros( (n1,n2) )
+        ldata = numpy.zeros( (n1,n2) , dtype=precision)
         ldata[ g1[0]:g1[1], g2[0]:g2[1] ] = idata
 
         fldata = ldata.flatten()
@@ -295,7 +296,7 @@ class pyrandaMPI():
 
         a2 = g2[1] - g2[0]
         a3 = g3[1] - g3[0]
-        gsum = numpy.zeros((a2,a3))
+        gsum = numpy.zeros((a2,a3), dtype=precision)
 
         # Get the local proc mean
         lsum = numpy.sum( data, index )
@@ -420,7 +421,7 @@ class pyrandaMPI():
         gx = max(1,I[1]-I[0])
         gy = max(1,J[1]-J[0])
         gz = max(1,K[1]-K[0])
-        gdata = numpy.zeros((gx,gy,gz))
+        gdata = numpy.zeros((gx,gy,gz), dtype=precision)
 
         nx = data.shape[0]
         ny = data.shape[1]
@@ -463,7 +464,7 @@ class pyrandaMPI():
         gx = max(1,I[1]-I[0])
         gy = max(1,J[1]-J[0])
         gz = max(1,K[1]-K[0])
-        gdata = numpy.zeros((gx,gy,gz))
+        gdata = numpy.zeros((gx,gy,gz), dtype=precision)
 
 
         g1 = self.chunk_3d_lo
@@ -525,7 +526,7 @@ class pyrandaMPI():
         if self.nz > 1:
             npz = np
         
-        gdata = numpy.zeros( (bx+2*npx,by+2*npy,bz+2*npz) )
+        gdata = numpy.zeros( (bx+2*npx,by+2*npy,bz+2*npz) , dtype=precision)
         gdata[npx:bx+npx,npy:by+npy,npz:bz+npz] = data
 
         if self.nx > 1:

@@ -17,7 +17,7 @@
    SUBROUTINE ghostdS(gstext,a) ! Fill ghost cells with scalar data from nearest neighbors.
     IMPLICIT NONE
     INTEGER, INTENT(IN) :: gstext ! extrapolation for ghost cells past boundaries: 0=copy bndry, 1=linear
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(INOUT) :: a ! (1-np:ax+np,1-np:ay+np,1-np:az+np), np=number of overlapping planes
+    REAL, DIMENSION(:,:,:), INTENT(INOUT) :: a ! (1-np:ax+np,1-np:ay+np,1-np:az+np), np=number of overlapping planes
      CALL ghostx(gstext,a)
      CALL ghosty(gstext,a)
      CALL ghostz(gstext,a)
@@ -26,7 +26,7 @@
    SUBROUTINE ghostdV(gstext,a,b,c) ! Fill ghost cells with vector data from nearest neighbors.
     IMPLICIT NONE
     INTEGER, INTENT(IN) :: gstext ! extrapolation for ghost cells past boundaries: 0=copy bndry, 1=linear
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(INOUT) :: a,b,c ! (1-np:ax+np,1-np:ay+np,1-np:az+np), np=number of overlapping planes
+    REAL, DIMENSION(:,:,:), INTENT(INOUT) :: a,b,c ! (1-np:ax+np,1-np:ay+np,1-np:az+np), np=number of overlapping planes
      CALL ghostx(gstext,a,-1); CALL ghosty(gstext,a)   ; CALL ghostz(gstext,a)
      CALL ghostx(gstext,b)   ; CALL ghosty(gstext,b,-1); CALL ghostz(gstext,b)
      CALL ghostx(gstext,c)   ; CALL ghosty(gstext,c)   ; CALL ghostz(gstext,c,-1)
@@ -35,7 +35,7 @@
    SUBROUTINE ghostdVc(gstext,a,vc) ! Fill ghost cells with vector component data from nearest neighbors.
     IMPLICIT NONE
     INTEGER, INTENT(IN) :: gstext ! extrapolation for ghost cells past boundaries: 0=copy bndry, 1=linear
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(INOUT) :: a ! (1-np:ax+np,1-np:ay+np,1-np:az+np), np=number of overlapping planes
+    REAL, DIMENSION(:,:,:), INTENT(INOUT) :: a ! (1-np:ax+np,1-np:ay+np,1-np:az+np), np=number of overlapping planes
     INTEGER, INTENT(IN) :: vc
     select case( vc )
     case( 1 )
@@ -52,8 +52,8 @@
    SUBROUTINE ghostx(gstext,a,isym) ! Fill ghost cells in x.
     IMPLICIT NONE
     INTEGER, INTENT(IN) :: gstext ! extrapolation for ghost cells past boundaries: 0=copy bndry, 1=linear
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(INOUT)  :: a ! (1:ax+2*np,:,:)
-    DOUBLE PRECISION, DIMENSION((SIZE(a,1)-patch_ptr%ax)/2,size(a,2),size(a,3)) :: a1,a2
+    REAL, DIMENSION(:,:,:), INTENT(INOUT)  :: a ! (1:ax+2*np,:,:)
+    REAL, DIMENSION((SIZE(a,1)-patch_ptr%ax)/2,size(a,2),size(a,3)) :: a1,a2
     INTEGER, INTENT(IN), OPTIONAL :: isym
     INTEGER :: bx,by,bz,np,n,i,gstx,sym,j,k
     integer :: ifunr,jfunr,kfunr,nfunr 
@@ -84,8 +84,8 @@
      !$omp end target teams distribute parallel do
      !$omp end target data
      
-     CALL MPI_SENDRECV(a1,n,MPI_DOUBLE_PRECISION,comm_ptr%xcom_lo,0, &
-                     & a2,n,MPI_DOUBLE_PRECISION,comm_ptr%xcom_hi,0, &
+     CALL MPI_SENDRECV(a1,n,MPI_REAL,comm_ptr%xcom_lo,0, &
+                     & a2,n,MPI_REAL,comm_ptr%xcom_hi,0, &
                      & comm_ptr%xcom,mpistatus,mpierr)
 
      !$omp target data map(to:a2) map(from:a1)    
@@ -103,8 +103,8 @@
      !$omp end target teams distribute parallel do
      !$omp end target data
      
-     CALL MPI_SENDRECV(a1,n,MPI_DOUBLE_PRECISION,comm_ptr%xcom_hi,1, &
-                     & a2,n,MPI_DOUBLE_PRECISION,comm_ptr%xcom_lo,1, &
+     CALL MPI_SENDRECV(a1,n,MPI_REAL,comm_ptr%xcom_hi,1, &
+                     & a2,n,MPI_REAL,comm_ptr%xcom_lo,1, &
                      & comm_ptr%xcom,mpistatus,mpierr)
 
      !$omp target data map(to:a2)
@@ -145,7 +145,7 @@
           do kfunr=1,size(a,3)
             do jfunr=1,size(a,2)
               DO i=1,np
-              a(i,jfunr,kfunr)= dble(sym )*a(2*( np )+1-i,jfunr,kfunr)
+              a(i,jfunr,kfunr)= SNGL(sym )*a(2*( np )+1-i,jfunr,kfunr)
                END DO
             end do
           end do
@@ -171,7 +171,7 @@
             do kfunr=1,size(a,3)
               do jfunr=1,size(a,2)
                 DO i=1,np
-                a(i,jfunr,kfunr)= DBLE(np+2-i )*a(np+1,jfunr,kfunr)- DBLE(np+1-i )*a(np+2,jfunr,kfunr)
+                a(i,jfunr,kfunr)= SNGL(np+2-i )*a(np+1,jfunr,kfunr)- SNGL(np+1-i )*a(np+2,jfunr,kfunr)
                  END DO
               end do
             end do
@@ -201,7 +201,7 @@
          do kfunr=1,size(a,3)
            do jfunr=1,size(a,2)
              DO i=1,np
-             a(bx+1-i,jfunr,kfunr)= dble(sym )*a(bx-2*( np )+i,jfunr,kfunr)
+             a(bx+1-i,jfunr,kfunr)= SNGL(sym )*a(bx-2*( np )+i,jfunr,kfunr)
               END DO
            end do
          end do
@@ -227,7 +227,7 @@
             do kfunr=1,size(a,3)
               do jfunr=1,size(a,2)
                 DO i=1,np
-                a(bx-np+i,jfunr,kfunr)= DBLE(i+1 )*a(bx-np,jfunr,kfunr)- DBLE(i )*a(bx-np-1,jfunr,kfunr)
+                a(bx-np+i,jfunr,kfunr)= SNGL(i+1 )*a(bx-np,jfunr,kfunr)- SNGL(i )*a(bx-np-1,jfunr,kfunr)
                  END DO
               end do
             end do
@@ -243,8 +243,8 @@
    SUBROUTINE ghosty(gstext,a,isym) ! Fill ghost cells in y.
     IMPLICIT NONE
     INTEGER, INTENT(IN) :: gstext ! extrapolation for ghost cells past boundaries: 0=copy bndry, 1=linear
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(INOUT)  :: a ! (:,1:ay+2*np,:)
-    DOUBLE PRECISION, DIMENSION(SIZE(a,1),(SIZE(a,2)-patch_ptr%ay)/2,size(a,3)) :: a1,a2
+    REAL, DIMENSION(:,:,:), INTENT(INOUT)  :: a ! (:,1:ay+2*np,:)
+    REAL, DIMENSION(SIZE(a,1),(SIZE(a,2)-patch_ptr%ay)/2,size(a,3)) :: a1,a2
     INTEGER, INTENT(IN), OPTIONAL :: isym
     INTEGER :: bx,by,bz,np,n,i,gstx,sym,j,k
     integer :: ifunr,jfunr,kfunr,nfunr 
@@ -275,8 +275,8 @@
      !$omp end target teams distribute parallel do
      !$omp end target data
      
-     CALL MPI_SENDRECV(a1,n,MPI_DOUBLE_PRECISION,comm_ptr%ycom_lo,0, &
-                     & a2,n,MPI_DOUBLE_PRECISION,comm_ptr%ycom_hi,0, &
+     CALL MPI_SENDRECV(a1,n,MPI_REAL,comm_ptr%ycom_lo,0, &
+                     & a2,n,MPI_REAL,comm_ptr%ycom_hi,0, &
                      & comm_ptr%ycom,mpistatus,mpierr)
 
      !$omp target data map(to:a2) map(from:a1)     
@@ -292,8 +292,8 @@
      !$omp end target teams distribute parallel do
      !$omp end target data
      
-     CALL MPI_SENDRECV(a1,n,MPI_DOUBLE_PRECISION,comm_ptr%ycom_hi,1, &
-                     & a2,n,MPI_DOUBLE_PRECISION,comm_ptr%ycom_lo,1, &
+     CALL MPI_SENDRECV(a1,n,MPI_REAL,comm_ptr%ycom_hi,1, &
+                     & a2,n,MPI_REAL,comm_ptr%ycom_lo,1, &
                      & comm_ptr%ycom,mpistatus,mpierr)
 
      !$omp target data map(to:a2)
@@ -333,7 +333,7 @@
          do kfunr=1,size(a,3)
            do ifunr=1,size(a,1)
              DO i=1,np
-             a(ifunr, i,kfunr)= dble(sym )*a(ifunr, 2*( np )+1-i,kfunr)
+             a(ifunr, i,kfunr)= SNGL(sym )*a(ifunr, 2*( np )+1-i,kfunr)
               END DO
            end do
          end do
@@ -359,7 +359,7 @@
             do kfunr=1,size(a,3)
               do ifunr=1,size(a,1)
                 DO i=1,np
-                a(ifunr, i,kfunr)= DBLE(np+2-i )*a(ifunr, np+1,kfunr)- DBLE(np+1-i )*a(ifunr, np+2,kfunr)
+                a(ifunr, i,kfunr)= SNGL(np+2-i )*a(ifunr, np+1,kfunr)- SNGL(np+1-i )*a(ifunr, np+2,kfunr)
                  END DO
               end do
             end do
@@ -389,7 +389,7 @@
           do kfunr=1,size(a,3)
             do ifunr=1,size(a,1)
               DO i=1,np
-              a(ifunr, by+1-i,kfunr)= dble(sym )*a(ifunr, by-2*( np )+i,kfunr)
+              a(ifunr, by+1-i,kfunr)= SNGL(sym )*a(ifunr, by-2*( np )+i,kfunr)
                END DO
             end do
           end do
@@ -415,7 +415,7 @@
             do kfunr=1,size(a,3)
               do ifunr=1,size(a,1)
                 DO i=1,np
-                a(ifunr, by-np+i,kfunr)= DBLE(i+1 )*a(ifunr, by-np,kfunr)- DBLE(i )*a(ifunr, by-np-1,kfunr)
+                a(ifunr, by-np+i,kfunr)= SNGL(i+1 )*a(ifunr, by-np,kfunr)- SNGL(i )*a(ifunr, by-np-1,kfunr)
                  END DO
               end do
             end do
@@ -431,8 +431,8 @@
    SUBROUTINE ghostz(gstext,a,isym) ! Fill ghost cells in z.
     IMPLICIT NONE
     INTEGER, INTENT(IN) :: gstext ! extrapolation for ghost cells past boundaries: 0=copy bndry, 1=linear
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(INOUT)  :: a ! (:,:,1:az+2*np)
-    DOUBLE PRECISION, DIMENSION(SIZE(a,1),SIZE(a,2),(SIZE(a,3)-patch_ptr%az)/2) :: a1,a2
+    REAL, DIMENSION(:,:,:), INTENT(INOUT)  :: a ! (:,:,1:az+2*np)
+    REAL, DIMENSION(SIZE(a,1),SIZE(a,2),(SIZE(a,3)-patch_ptr%az)/2) :: a1,a2
     INTEGER, INTENT(IN), OPTIONAL :: isym
     INTEGER :: bx,by,bz,np,n,i,gstx,sym,j,k
     integer :: ifunr,jfunr,kfunr,nfunr 
@@ -463,8 +463,8 @@
      !$omp end target teams distribute parallel do
      !$omp end target data
      
-     CALL MPI_SENDRECV(a1,n,MPI_DOUBLE_PRECISION,comm_ptr%zcom_lo,0, &
-                     & a2,n,MPI_DOUBLE_PRECISION,comm_ptr%zcom_hi,0, &
+     CALL MPI_SENDRECV(a1,n,MPI_REAL,comm_ptr%zcom_lo,0, &
+                     & a2,n,MPI_REAL,comm_ptr%zcom_hi,0, &
                      & comm_ptr%zcom,mpistatus,mpierr)
 
      !$omp target data map(to:a2) map(from:a1)
@@ -480,8 +480,8 @@
      !$omp end target teams distribute parallel do
      !$omp end target data
      
-     CALL MPI_SENDRECV(a1,n,MPI_DOUBLE_PRECISION,comm_ptr%zcom_hi,1, &
-                     & a2,n,MPI_DOUBLE_PRECISION,comm_ptr%zcom_lo,1, &
+     CALL MPI_SENDRECV(a1,n,MPI_REAL,comm_ptr%zcom_hi,1, &
+                     & a2,n,MPI_REAL,comm_ptr%zcom_lo,1, &
                      & comm_ptr%zcom,mpistatus,mpierr)
 
      !$omp target data map(to:a2)
@@ -521,7 +521,7 @@
           do jfunr=1,size(a,2)
             do ifunr=1,size(a,1)
               DO i=1,np
-              a(ifunr,jfunr, i )=dble(sym )*a(ifunr,jfunr, 2*( np )+1-i )
+              a(ifunr,jfunr, i )=SNGL(sym )*a(ifunr,jfunr, 2*( np )+1-i )
               END DO
             end do
           end do
@@ -547,7 +547,7 @@
             do jfunr=1,size(a,2)
               do ifunr=1,size(a,1)
                 DO i=1,np
-                a(ifunr,jfunr, i )=DBLE(np+2-i )*a(ifunr,jfunr, np+1 )-DBLE(np+1-i )*a(ifunr,jfunr, np+2 )
+                a(ifunr,jfunr, i )=SNGL(np+2-i )*a(ifunr,jfunr, np+1 )-SNGL(np+1-i )*a(ifunr,jfunr, np+2 )
                 END DO
               end do
             end do
@@ -577,7 +577,7 @@
           do jfunr=1,size(a,2)
             do ifunr=1,size(a,1)
               DO i=1,np
-              a(ifunr,jfunr, bz+1-i )=dble(sym )*a(ifunr,jfunr, bz-2*( np )+i )
+              a(ifunr,jfunr, bz+1-i )=SNGL(sym )*a(ifunr,jfunr, bz-2*( np )+i )
               END DO
             end do
           end do
@@ -603,7 +603,7 @@
             do jfunr=1,size(a,2)
               do ifunr=1,size(a,1)
                 DO i=1,np
-                a(ifunr,jfunr, bz-np+i )=DBLE(i+1 )*a(ifunr,jfunr, bz-np )-DBLE(i )*a(ifunr,jfunr, bz-np-1 )
+                a(ifunr,jfunr, bz-np+i )=SNGL(i+1 )*a(ifunr,jfunr, bz-np )-SNGL(i )*a(ifunr,jfunr, bz-np-1 )
                 END DO
               end do
             end do
@@ -867,18 +867,18 @@
 ! FOR IMPLICIT CONDUCTION AND RADIATION ROUTINES----------------------------------------------------
    SUBROUTINE faces(D,Dip,Dim,Djp,Djm,Dkp,Dkm)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: D
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: Dip,Dim,Djp,Djm,Dkp,Dkm
-    DOUBLE PRECISION, DIMENSION(0:patch_ptr%ax+1,0:patch_ptr%ay+1,0:patch_ptr%az+1) :: Dghost
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: D
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: Dip,Dim,Djp,Djm,Dkp,Dkm
+    REAL, DIMENSION(0:patch_ptr%ax+1,0:patch_ptr%ay+1,0:patch_ptr%az+1) :: Dghost
     INTEGER :: i,j,k
      Dghost(1:patch_ptr%ax,1:patch_ptr%ay,1:patch_ptr%az) = D
      CALL ghost(0,Dghost)
-     FORALL(i=1:patch_ptr%ax,j=1:patch_ptr%ay,k=1:patch_ptr%az) Dip(i,j,k) = 0.5D0*(Dghost(i,j,k) + Dghost(i+1,j  ,k  ))
-     FORALL(i=1:patch_ptr%ax,j=1:patch_ptr%ay,k=1:patch_ptr%az) Dim(i,j,k) = 0.5D0*(Dghost(i,j,k) + Dghost(i-1,j  ,k  ))
-     FORALL(i=1:patch_ptr%ax,j=1:patch_ptr%ay,k=1:patch_ptr%az) Djp(i,j,k) = 0.5D0*(Dghost(i,j,k) + Dghost(i  ,j+1,k  ))
-     FORALL(i=1:patch_ptr%ax,j=1:patch_ptr%ay,k=1:patch_ptr%az) Djm(i,j,k) = 0.5D0*(Dghost(i,j,k) + Dghost(i  ,j-1,k  ))
-     FORALL(i=1:patch_ptr%ax,j=1:patch_ptr%ay,k=1:patch_ptr%az) Dkp(i,j,k) = 0.5D0*(Dghost(i,j,k) + Dghost(i  ,j  ,k+1))
-     FORALL(i=1:patch_ptr%ax,j=1:patch_ptr%ay,k=1:patch_ptr%az) Dkm(i,j,k) = 0.5D0*(Dghost(i,j,k) + Dghost(i  ,j  ,k-1))
+     FORALL(i=1:patch_ptr%ax,j=1:patch_ptr%ay,k=1:patch_ptr%az) Dip(i,j,k) = 0.5E0*(Dghost(i,j,k) + Dghost(i+1,j  ,k  ))
+     FORALL(i=1:patch_ptr%ax,j=1:patch_ptr%ay,k=1:patch_ptr%az) Dim(i,j,k) = 0.5E0*(Dghost(i,j,k) + Dghost(i-1,j  ,k  ))
+     FORALL(i=1:patch_ptr%ax,j=1:patch_ptr%ay,k=1:patch_ptr%az) Djp(i,j,k) = 0.5E0*(Dghost(i,j,k) + Dghost(i  ,j+1,k  ))
+     FORALL(i=1:patch_ptr%ax,j=1:patch_ptr%ay,k=1:patch_ptr%az) Djm(i,j,k) = 0.5E0*(Dghost(i,j,k) + Dghost(i  ,j-1,k  ))
+     FORALL(i=1:patch_ptr%ax,j=1:patch_ptr%ay,k=1:patch_ptr%az) Dkp(i,j,k) = 0.5E0*(Dghost(i,j,k) + Dghost(i  ,j  ,k+1))
+     FORALL(i=1:patch_ptr%ax,j=1:patch_ptr%ay,k=1:patch_ptr%az) Dkm(i,j,k) = 0.5E0*(Dghost(i,j,k) + Dghost(i  ,j  ,k-1))
    END SUBROUTINE faces
 
 !---------------------------------------------------------------------------
@@ -888,60 +888,60 @@
 !---------------------------------------------------------------------------
    SUBROUTINE radfaces(D,Dip,Dim,Djp,Djm,Dkp,Dkm)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: D
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: Dip,Dim,Djp,Djm,Dkp,Dkm
-    DOUBLE PRECISION, DIMENSION(0:patch_ptr%ax+1,0:patch_ptr%ay+1,0:patch_ptr%az+1) :: Dghost
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: D
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: Dip,Dim,Djp,Djm,Dkp,Dkm
+    REAL, DIMENSION(0:patch_ptr%ax+1,0:patch_ptr%ay+1,0:patch_ptr%az+1) :: Dghost
     INTEGER :: i,j,k
      Dghost(1:patch_ptr%ax,1:patch_ptr%ay,1:patch_ptr%az) = D
      CALL ghost(0,Dghost)
      FORALL(i=1:patch_ptr%ax,j=1:patch_ptr%ay,k=1:patch_ptr%az)
-       Dip(i,j,k) = MIN(0.5D0  *  (Dghost(i,j,k) + Dghost(i+1,j  ,k  )), &
-                        MAX(2.D0 * Dghost(i,j,k) * Dghost(i+1,j  ,k  )   &
+       Dip(i,j,k) = MIN(0.5E0  *  (Dghost(i,j,k) + Dghost(i+1,j  ,k  )), &
+                        MAX(2.E0 * Dghost(i,j,k) * Dghost(i+1,j  ,k  )   &
                                 / (Dghost(i,j,k) + Dghost(i+1,j  ,k  )), &
-                            4.D0 / (3.D0 * patch_ptr%dx)))
-       Dim(i,j,k) = MIN(0.5D0  *  (Dghost(i,j,k) + Dghost(i-1,j  ,k  )), &
-                        MAX(2.D0 * Dghost(i,j,k) * Dghost(i-1,j  ,k  )   &
+                            4.E0 / (3.E0 * patch_ptr%dx)))
+       Dim(i,j,k) = MIN(0.5E0  *  (Dghost(i,j,k) + Dghost(i-1,j  ,k  )), &
+                        MAX(2.E0 * Dghost(i,j,k) * Dghost(i-1,j  ,k  )   &
                                 / (Dghost(i,j,k) + Dghost(i-1,j  ,k  )), &
-                            4.D0 / (3.D0 * patch_ptr%dx)))
-       Djp(i,j,k) = MIN(0.5D0  *  (Dghost(i,j,k) + Dghost(i  ,j+1,k  )), &
-                        MAX(2.D0 * Dghost(i,j,k) * Dghost(i  ,j+1,k  )   &
+                            4.E0 / (3.E0 * patch_ptr%dx)))
+       Djp(i,j,k) = MIN(0.5E0  *  (Dghost(i,j,k) + Dghost(i  ,j+1,k  )), &
+                        MAX(2.E0 * Dghost(i,j,k) * Dghost(i  ,j+1,k  )   &
                                 / (Dghost(i,j,k) + Dghost(i  ,j+1,k  )), &
-                            4.D0 / (3.D0 * patch_ptr%dy)))
-       Djm(i,j,k) = MIN(0.5D0  *  (Dghost(i,j,k) + Dghost(i  ,j-1,k  )), &
-                        MAX(2.D0 * Dghost(i,j,k) * Dghost(i  ,j-1,k  )   &
+                            4.E0 / (3.E0 * patch_ptr%dy)))
+       Djm(i,j,k) = MIN(0.5E0  *  (Dghost(i,j,k) + Dghost(i  ,j-1,k  )), &
+                        MAX(2.E0 * Dghost(i,j,k) * Dghost(i  ,j-1,k  )   &
                                 / (Dghost(i,j,k) + Dghost(i  ,j-1,k  )), &
-                            4.D0 / (3.D0 * patch_ptr%dy)))
-       Dkp(i,j,k) = MIN(0.5D0  *  (Dghost(i,j,k) + Dghost(i  ,j  ,k+1)), &
-                        MAX(2.D0 * Dghost(i,j,k) * Dghost(i  ,j  ,k+1)   &
+                            4.E0 / (3.E0 * patch_ptr%dy)))
+       Dkp(i,j,k) = MIN(0.5E0  *  (Dghost(i,j,k) + Dghost(i  ,j  ,k+1)), &
+                        MAX(2.E0 * Dghost(i,j,k) * Dghost(i  ,j  ,k+1)   &
                                 / (Dghost(i,j,k) + Dghost(i  ,j  ,k+1)), &
-                            4.D0 / (3.D0 * patch_ptr%dz)))
-       Dkm(i,j,k) = MIN(0.5D0  *  (Dghost(i,j,k) + Dghost(i  ,j  ,k-1)), &
-                        MAX(2.D0 * Dghost(i,j,k) * Dghost(i  ,j  ,k-1)   &
+                            4.E0 / (3.E0 * patch_ptr%dz)))
+       Dkm(i,j,k) = MIN(0.5E0  *  (Dghost(i,j,k) + Dghost(i  ,j  ,k-1)), &
+                        MAX(2.E0 * Dghost(i,j,k) * Dghost(i  ,j  ,k-1)   &
                                 / (Dghost(i,j,k) + Dghost(i  ,j  ,k-1)), &
-                            4.D0 / (3.D0 * patch_ptr%dz)))
+                            4.E0 / (3.E0 * patch_ptr%dz)))
      END FORALL
    END SUBROUTINE radfaces
 
    SUBROUTINE harmfaces(D,Dip,Dim,Djp,Djm,Dkp,Dkm)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: D
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: Dip,Dim,Djp,Djm,Dkp,Dkm
-    DOUBLE PRECISION, DIMENSION(0:patch_ptr%ax+1,0:patch_ptr%ay+1,0:patch_ptr%az+1) :: Dghost
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: D
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: Dip,Dim,Djp,Djm,Dkp,Dkm
+    REAL, DIMENSION(0:patch_ptr%ax+1,0:patch_ptr%ay+1,0:patch_ptr%az+1) :: Dghost
     INTEGER :: i,j,k
      Dghost(1:patch_ptr%ax,1:patch_ptr%ay,1:patch_ptr%az) = D
      CALL ghost(0,Dghost)
      FORALL(i=1:patch_ptr%ax,j=1:patch_ptr%ay,k=1:patch_ptr%az)
-       Dip(i,j,k) = (2.D0 * Dghost(i,j,k) * Dghost(i+1,j  ,k  ))   &
+       Dip(i,j,k) = (2.E0 * Dghost(i,j,k) * Dghost(i+1,j  ,k  ))   &
                          / (Dghost(i,j,k) + Dghost(i+1,j  ,k  ))
-       Dim(i,j,k) = (2.D0 * Dghost(i,j,k) * Dghost(i-1,j  ,k  ))   &
+       Dim(i,j,k) = (2.E0 * Dghost(i,j,k) * Dghost(i-1,j  ,k  ))   &
                          / (Dghost(i,j,k) + Dghost(i-1,j  ,k  ))
-       Djp(i,j,k) = (2.D0 * Dghost(i,j,k) * Dghost(i  ,j+1,k  ))   &
+       Djp(i,j,k) = (2.E0 * Dghost(i,j,k) * Dghost(i  ,j+1,k  ))   &
                          / (Dghost(i,j,k) + Dghost(i  ,j+1,k  ))
-       Djm(i,j,k) = (2.D0 * Dghost(i,j,k) * Dghost(i  ,j-1,k  ))   &
+       Djm(i,j,k) = (2.E0 * Dghost(i,j,k) * Dghost(i  ,j-1,k  ))   &
                          / (Dghost(i,j,k) + Dghost(i  ,j-1,k  ))
-       Dkp(i,j,k) = (2.D0 * Dghost(i,j,k) * Dghost(i  ,j  ,k+1))   &
+       Dkp(i,j,k) = (2.E0 * Dghost(i,j,k) * Dghost(i  ,j  ,k+1))   &
                          / (Dghost(i,j,k) + Dghost(i  ,j  ,k+1))
-       Dkm(i,j,k) = (2.D0 * Dghost(i,j,k) * Dghost(i  ,j  ,k-1))   &
+       Dkm(i,j,k) = (2.E0 * Dghost(i,j,k) * Dghost(i  ,j  ,k-1))   &
                          / (Dghost(i,j,k) + Dghost(i  ,j  ,k-1))
      END FORALL
    END SUBROUTINE harmfaces

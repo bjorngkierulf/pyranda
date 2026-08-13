@@ -11,6 +11,7 @@
 import numpy
 from .pyrandaPackage import pyrandaPackage
 
+precision=numpy.float32
 
 class pyrandaBC(pyrandaPackage):
 
@@ -573,11 +574,11 @@ class pyrandaBC(pyrandaPackage):
         """
 
         # itializing free stream vectors
-        rhoo = numpy.zeros((Ui.shape[0],1)) + Rhoref
-        Uo   = numpy.zeros((Ui.shape[0],1)) + Uref
-        Vo   = numpy.zeros((Ui.shape[0],1)) + Vref
-        Wo   = numpy.zeros((Ui.shape[0],1)) + Wref
-        Po   = numpy.zeros((Ui.shape[0],1)) + Pref
+        rhoo = numpy.zeros((Ui.shape[0],1), dtype=precision) + Rhoref
+        Uo   = numpy.zeros((Ui.shape[0],1), dtype=precision) + Uref
+        Vo   = numpy.zeros((Ui.shape[0],1), dtype=precision) + Vref
+        Wo   = numpy.zeros((Ui.shape[0],1), dtype=precision) + Wref
+        Po   = numpy.zeros((Ui.shape[0],1), dtype=precision) + Pref
 
         # getting normal vectors
         nx,ny,nz = self.getnormal(direction)

@@ -18,7 +18,7 @@
   subroutine bpentLUD1(c,n)
     implicit none
     integer(c_int), intent(in) :: n
-    real(kind=c_double), dimension(n,5), intent(inout) :: c
+    real(kind=c_float), dimension(n,5), intent(inout) :: c
     integer(c_int) :: i
     ! Forward elimination
     do i=1,n-2
@@ -42,8 +42,8 @@
   subroutine bpentLUS1(c, r, n)
     implicit none
     integer(c_int), intent(in) :: n
-    real(kind=c_double), dimension(n,5), intent(in) :: c
-    real(kind=c_double), dimension(n), intent(inout) :: r
+    real(kind=c_float), dimension(n,5), intent(in) :: c
+    real(kind=c_float), dimension(n), intent(inout) :: r
     integer(c_int) :: i
     ! Forward substitution
     do i=1,n-2
@@ -64,8 +64,8 @@
   SUBROUTINE ppentLUD1(c,N)
       IMPLICIT NONE
       integer(c_int), INTENT(IN) :: N
-      real(kind=c_double), dimension(N,9), INTENT(INOUT) :: c
-      real(kind=c_double), parameter :: one=1.0_c_double
+      real(kind=c_float), dimension(N,9), INTENT(INOUT) :: c
+      real(kind=c_float), parameter :: one=1.0_c_double
       integer(c_int) :: K
   
       c(1,8)=c(1,1)
@@ -134,8 +134,8 @@
   SUBROUTINE ppentLUS1(c,r,n)
       IMPLICIT NONE
       integer(c_int), intent(in) :: n
-      real(kind=c_double), DIMENSION(n,9), INTENT(IN) :: c
-      real(kind=c_double), DIMENSION(n), INTENT(INOUT) :: r
+      real(kind=c_float), DIMENSION(n,9), INTENT(IN) :: c
+      real(kind=c_float), DIMENSION(n), INTENT(INOUT) :: r
       integer(c_int) :: i
         r(2)=r(2)-c(2,2)*r(1)
         DO i=3,N-2
@@ -161,7 +161,7 @@
     USE LES_blockmath
     implicit none
     integer(c_int), intent(in) :: n
-    real(kind=c_double), dimension(4,4,3,n), intent(inout) :: abc
+    real(kind=c_float), dimension(4,4,3,n), intent(inout) :: abc
     type(block4), dimension(n) :: a,b,c
     integer(c_int) :: j
     do j=1,n
@@ -184,9 +184,9 @@
   subroutine btrid_block4_lus_al( a, r, n, n1, n2 )
     implicit none
     integer(c_int), intent(in) :: n, n1, n2
-    real(kind=c_double), dimension(4,4,3,n), intent(in) :: a
-    real(kind=c_double), dimension(4,n1,n2,n), intent(inout) :: r
-    real(kind=c_double), dimension(4) :: tmp
+    real(kind=c_float), dimension(4,4,3,n), intent(in) :: a
+    real(kind=c_float), dimension(4,n1,n2,n), intent(inout) :: r
+    real(kind=c_float), dimension(4) :: tmp
     integer(c_int) :: i,j,k
     
     !$omp target teams if(gpu_kernel==1)
@@ -227,9 +227,9 @@
   subroutine btrid_block4_lus_as( a, r, n, n1, n2 )
     implicit none
     integer(c_int), intent(in) :: n, n1, n2
-    real(kind=c_double), dimension(4,4,3,n), intent(in) :: a
-    real(kind=c_double), dimension(4,n1,n2,n), intent(inout) :: r
-    real(kind=c_double), dimension(4) :: tmp
+    real(kind=c_float), dimension(4,4,3,n), intent(in) :: a
+    real(kind=c_float), dimension(4,n1,n2,n), intent(inout) :: r
+    real(kind=c_float), dimension(4) :: tmp
     integer(c_int) :: i,j,k,l
     do k=2,n
       do j=1,n2
@@ -264,8 +264,8 @@
   subroutine btrid_block4_lus_mv( a, r, n, n1, n2 )
     implicit none
     integer(c_int), intent(in) :: n, n1, n2
-    real(kind=c_double), dimension(4,4,3,n), intent(in) :: a
-    real(kind=c_double), dimension(4,n1,n2,n), intent(inout) :: r
+    real(kind=c_float), dimension(4,4,3,n), intent(in) :: a
+    real(kind=c_float), dimension(4,n1,n2,n), intent(inout) :: r
     integer(c_int) :: i,j,k
     do k=2,n
       do j=1,n2
@@ -294,12 +294,12 @@
   subroutine btrid_block4_lus_dgemm( a, r, n, n1, n2 )
     implicit none
     integer(c_int), intent(in) :: n, n1, n2
-    real(kind=c_double), dimension(4,4,3,n), intent(in) :: a
-    real(kind=c_double), dimension(4,n1,n2,n), intent(inout) :: r
-    real(kind=c_double), dimension(4,n1) :: tmp1,tmp2
-    real(kind=c_double), dimension(4,4) :: c
+    real(kind=c_float), dimension(4,4,3,n), intent(in) :: a
+    real(kind=c_float), dimension(4,n1,n2,n), intent(inout) :: r
+    real(kind=c_float), dimension(4,n1) :: tmp1,tmp2
+    real(kind=c_float), dimension(4,4) :: c
     integer(c_int) :: i,j,k
-	c = 0.0_8
+	c = 0.0_4
     do k=2,n
       do j=1,n2
         tmp1 = r(:,:,j,k-1)
@@ -329,8 +329,8 @@
   subroutine btrid_block4_lus_mm( a, r, n, n1, n2 )
     implicit none
     integer(c_int), intent(in) :: n, n1, n2
-    real(kind=c_double), dimension(4,4,3,n), intent(in) :: a
-    real(kind=c_double), dimension(4,n1,n2,n), intent(inout) :: r
+    real(kind=c_float), dimension(4,4,3,n), intent(in) :: a
+    real(kind=c_float), dimension(4,n1,n2,n), intent(inout) :: r
     integer(c_int) :: i,j,k
     do k=2,n
       do j=1,n2
@@ -352,15 +352,15 @@
     USE LES_blockmath
     implicit none
     integer(c_int), intent(in) :: n
-    real(kind=c_double), dimension(4,4,4,n), intent(inout) :: abc
+    real(kind=c_float), dimension(4,4,4,n), intent(inout) :: abc
     type(block4), dimension(n) :: a,b,c,aa,cc
     integer(c_int) :: j
     do j=1,n
       a(j) = abc(:,:,1,j)
       b(j) = abc(:,:,2,j)
       c(j) = abc(:,:,3,j)
-      aa(j) = 0.0_8
-      cc(j) = 0.0_8
+      aa(j) = 0.0_4
+      cc(j) = 0.0_4
     end do
     j = 1
     b(j) = .inv.b(j)
@@ -393,9 +393,9 @@
   subroutine ptrid_block4_lus_al( a, r, n, n1, n2 )
     implicit none
     integer(c_int), intent(in) :: n, n1, n2
-    real(kind=c_double), dimension(4,4,4,n), intent(in) :: a
-    real(kind=c_double), dimension(4,n1,n2,n), intent(inout) :: r
-    real(kind=c_double), dimension(4) :: tmp
+    real(kind=c_float), dimension(4,4,4,n), intent(in) :: a
+    real(kind=c_float), dimension(4,n1,n2,n), intent(inout) :: r
+    real(kind=c_float), dimension(4) :: tmp
     integer(c_int) :: i,j,k
     !$omp target teams if(gpu_kernel==1)
     if (n > 2) then
@@ -456,9 +456,9 @@
   subroutine ptrid_block4_lus_as( a, r, n, n1, n2 )
     implicit none
     integer(c_int), intent(in) :: n, n1, n2
-    real(kind=c_double), dimension(4,4,4,n), intent(in) :: a
-    real(kind=c_double), dimension(4,n1,n2,n), intent(inout) :: r
-    real(kind=c_double), dimension(4) :: tmp
+    real(kind=c_float), dimension(4,4,4,n), intent(in) :: a
+    real(kind=c_float), dimension(4,n1,n2,n), intent(inout) :: r
+    real(kind=c_float), dimension(4) :: tmp
     integer(c_int) :: i,j,k,l
     !$omp target teams distribute parallel do collapse(2) if(gpu_kernel==1)
     do j=1,n2
@@ -512,8 +512,8 @@
   subroutine ptrid_block4_lus_mv( a, r, n, n1, n2 )
     implicit none
     integer(c_int), intent(in) :: n, n1, n2
-    real(kind=c_double), dimension(4,4,4,n), intent(in) :: a
-    real(kind=c_double), dimension(4,n1,n2,n), intent(inout) :: r
+    real(kind=c_float), dimension(4,4,4,n), intent(in) :: a
+    real(kind=c_float), dimension(4,n1,n2,n), intent(inout) :: r
     integer(c_int) :: i,j,k
     do k=2,n
       do j=1,n2
@@ -549,12 +549,12 @@
   subroutine ptrid_block4_lus_dgemm( a, r, n, n1, n2 )
     implicit none
     integer(c_int), intent(in) :: n, n1, n2
-    real(kind=c_double), dimension(4,4,4,n), intent(in) :: a
-    real(kind=c_double), dimension(4,n1,n2,n), intent(inout) :: r
-    real(kind=c_double), dimension(4,n1) :: tmp1,tmp2
-    real(kind=c_double), dimension(4,4) :: c
+    real(kind=c_float), dimension(4,4,4,n), intent(in) :: a
+    real(kind=c_float), dimension(4,n1,n2,n), intent(inout) :: r
+    real(kind=c_float), dimension(4,n1) :: tmp1,tmp2
+    real(kind=c_float), dimension(4,4) :: c
     integer(c_int) :: i,j,k
-    c = 0.0_8
+    c = 0.0_4
     c(:,1:2) = a(:,1:2,4,1)
     do j=1,n2
       tmp1 = r(:,:,j,1)
@@ -602,8 +602,8 @@
   subroutine ptrid_block4_lus_mm( a, r, n, n1, n2 )
     implicit none
     integer(c_int), intent(in) :: n, n1, n2
-    real(kind=c_double), dimension(4,4,4,n), intent(in) :: a
-    real(kind=c_double), dimension(4,n1,n2,n), intent(inout) :: r
+    real(kind=c_float), dimension(4,4,4,n), intent(in) :: a
+    real(kind=c_float), dimension(4,n1,n2,n), intent(inout) :: r
     integer(c_int) :: i,j,k
     do k=2,n
       do j=1,n2
@@ -629,8 +629,8 @@
   subroutine bpentLUS3x(c, r, n, n1, n2, n3)
     implicit none
     integer(c_int), intent(in) :: n,n1,n2,n3
-    real(kind=c_double), dimension(n,5), intent(in) :: c
-    real(kind=c_double), dimension(n1,n2,n3), intent(inout) :: r
+    real(kind=c_float), dimension(n,5), intent(in) :: c
+    real(kind=c_float), dimension(n1,n2,n3), intent(inout) :: r
     integer(c_int) :: i,j,k
     if( n > n1 ) return
     !$omp target teams distribute parallel do collapse(2) if(gpu_kernel==1)
@@ -654,9 +654,9 @@
   SUBROUTINE ppentLUS3x(c,r,n,n1,n2,n3)
     IMPLICIT NONE
     integer(c_int), intent(in) :: n,n1,n2,n3
-    real(kind=c_double), DIMENSION(n,9), INTENT(IN) :: c
-    real(kind=c_double), DIMENSION(n1,n2,n3), INTENT(INOUT) :: r
-    real(kind=c_double) :: tmp1,tmp2
+    real(kind=c_float), DIMENSION(n,9), INTENT(IN) :: c
+    real(kind=c_float), DIMENSION(n1,n2,n3), INTENT(INOUT) :: r
+    real(kind=c_float) :: tmp1,tmp2
     integer(c_int) :: i,j,k
     if( n > n1 ) return
     !$omp target teams distribute parallel do collapse(2) private(tmp1,tmp2) if(gpu_kernel==1)
@@ -687,8 +687,8 @@
   subroutine bpentLUS3y(c, r, n, n1, n2, n3)
     implicit none
     integer(c_int), intent(in) :: n, n1, n2, n3
-    real(kind=c_double), dimension(n,5), intent(in) :: c
-    real(kind=c_double), dimension(n1,n2,n3), intent(inout) :: r
+    real(kind=c_float), dimension(n,5), intent(in) :: c
+    real(kind=c_float), dimension(n1,n2,n3), intent(inout) :: r
     integer(c_int) :: i,j,k
     if( n > n2 ) return
     !$omp target teams distribute parallel do collapse(2) if(gpu_kernel==1)
@@ -712,8 +712,8 @@
   subroutine bpentLUS2y(c, r, n, n1, n2)
     implicit none
     integer(c_int), intent(in) :: n, n1, n2
-    real(kind=c_double), dimension(n,5), intent(in) :: c
-    real(kind=c_double), dimension(n1,n2), intent(inout) :: r
+    real(kind=c_float), dimension(n,5), intent(in) :: c
+    real(kind=c_float), dimension(n1,n2), intent(inout) :: r
     integer(c_int) :: i,j,k
     if( n > n2 ) return
       do j=1,n-2
@@ -737,9 +737,9 @@
   SUBROUTINE ppentLUS3y(c, r, n, n1, n2, n3)
     IMPLICIT NONE
     integer(c_int), intent(in) :: n, n1, n2, n3
-    real(kind=c_double), DIMENSION(n,9), INTENT(IN) :: c
-    real(kind=c_double), DIMENSION(n1,n2,n3), INTENT(INOUT) :: r
-    real(kind=c_double) :: tmp1,tmp2
+    real(kind=c_float), DIMENSION(n,9), INTENT(IN) :: c
+    real(kind=c_float), DIMENSION(n1,n2,n3), INTENT(INOUT) :: r
+    real(kind=c_float) :: tmp1,tmp2
     integer(c_int) :: i,j,k
     if( n > n2 ) return
     !$omp target teams distribute parallel do collapse(2) private(tmp1,tmp2) if(gpu_kernel==1)
@@ -770,8 +770,8 @@
   subroutine bpentLUS3z(c, r, n, n1, n2, n3)
     implicit none
     integer(c_int), intent(in) :: n, n1, n2, n3
-    real(kind=c_double), dimension(n,5), intent(in) :: c
-    real(kind=c_double), dimension(n1,n2,n3), intent(inout) :: r
+    real(kind=c_float), dimension(n,5), intent(in) :: c
+    real(kind=c_float), dimension(n1,n2,n3), intent(inout) :: r
     integer(c_int) :: i,j,k
     if( n > n3 ) return
     !$omp target teams distribute parallel do collapse(2) if(gpu_kernel==1)
@@ -795,9 +795,9 @@
   SUBROUTINE ppentLUS3z(c, r, n, n1, n2, n3)
       IMPLICIT NONE
       integer(c_int), intent(in) :: n, n1, n2, n3
-      real(kind=c_double), DIMENSION(n,9), INTENT(IN) :: c
-      real(kind=c_double), DIMENSION(n1,n2,n3), INTENT(INOUT) :: r
-      real(kind=c_double) :: tmp1,tmp2
+      real(kind=c_float), DIMENSION(n,9), INTENT(IN) :: c
+      real(kind=c_float), DIMENSION(n1,n2,n3), INTENT(INOUT) :: r
+      real(kind=c_float) :: tmp1,tmp2
       integer(c_int) :: i,j,k
       if( n > n3 ) return
       !$omp target teams distribute parallel do collapse(2) private(tmp1,tmp2) if(gpu_kernel==1)
@@ -830,8 +830,8 @@
    IMPLICIT NONE
    INTEGER, INTENT(IN) :: opindex
    LOGICAL(c_bool), INTENT(IN) :: use_ppent_opt
-   real(kind=c_double), DIMENSION(:,:), INTENT(IN) :: clu
-   real(kind=c_double), DIMENSION(:,:,:), INTENT(INOUT) :: FRHS
+   real(kind=c_float), DIMENSION(:,:), INTENT(IN) :: clu
+   real(kind=c_float), DIMENSION(:,:,:), INTENT(INOUT) :: FRHS
    INTEGER :: N,K
    INTEGER :: n1, n2, n3
 !   INTEGER :: flopCount
@@ -1005,9 +1005,9 @@
   USE LES_nrutil
   IMPLICIT NONE
   INTEGER   n1,n2,n3
-  DOUBLE PRECISION clu(n2,9)
-  DOUBLE PRECISION FRHS(n1,n2,n3)
-  DOUBLE PRECISION, dimension(n1) :: sum1, sum2
+  REAL clu(n2,9)
+  REAL FRHS(n1,n2,n3)
+  REAL, dimension(n1) :: sum1, sum2
 !  INTEGER  flopCount
   INTEGER  i, j, k, N
 !  flopCount = n1*n3*(17*n2 - 40)

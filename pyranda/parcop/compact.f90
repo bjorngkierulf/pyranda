@@ -20,7 +20,7 @@ module LES_compact
   integer :: gpu_kernel = 1
   integer :: directcom = 1
   
-  REAL(KIND=c_double), PARAMETER :: zero=0.0_c_double, one=1.0_c_double
+  Real(kind=c_float), PARAMETER :: zero=0.0_c_double, one=1.0_c_double
   LOGICAL(c_bool) :: debug=.false.
 
   TYPE control_type  ! from input or samrai
@@ -35,7 +35,7 @@ module LES_compact
   type compact_type  ! suite of operations
     type(control_type) :: control  ! controls
     integer(c_int) :: mbc(2,3,2), nop(3) ! (boundary, direction, symmetry), number of operators
-    real(KIND=c_double) :: dx,dy,dz  ! nomimal grid spacing for derivatives
+    real(kind=c_float) :: dx,dy,dz  ! nomimal grid spacing for derivatives
     type(compact_op1_d1), dimension(2) :: d1x,d1y,d1z
     type(compact_op1_r3), dimension(2) :: d2x,d2y,d2z
     type(compact_op1_r3), dimension(2) :: d4x,d4y,d4z

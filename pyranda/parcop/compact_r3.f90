@@ -18,7 +18,7 @@ module LES_compact_r3
   integer :: gpu_kernel = 1
   logical(c_bool) :: bpp_lus_opt = .true. , use_ppent_opt = .true.
   
-  REAL(KIND=c_double), PARAMETER :: zero=0.0_c_double, one=1.0_c_double
+  Real(kind=c_float), PARAMETER :: zero=0.0_c_double, one=1.0_c_double
   LOGICAL(c_bool) :: debug=.false.
 
   ! these extensions override the generic operations
@@ -38,15 +38,15 @@ contains
     implicit none
     class(compact_op1_r3), intent(in) :: op
     integer, intent(in) :: ax,ay,az
-    real(kind=c_double), dimension(ax,ay,az), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2 ! ghost values
-    real(kind=c_double), dimension(:,:), intent(in), optional :: dv1,dv2 ! boundary values
-    real(kind=c_double), dimension(ax,ay,az), intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), allocatable :: vbr1,vbr2,vbs1,vbs2
-    real(kind=c_double), dimension(:,:,:), allocatable :: dvop
-    real(kind=c_double), dimension(:,:,:,:), allocatable :: dvo
-    real(kind=c_double), dimension(op%ncr) :: vp
-    real(kind=c_double), dimension(ax) :: sumr
+    real(kind=c_float), dimension(ax,ay,az), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2 ! ghost values
+    real(kind=c_float), dimension(:,:), intent(in), optional :: dv1,dv2 ! boundary values
+    real(kind=c_float), dimension(ax,ay,az), intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), allocatable :: vbr1,vbr2,vbs1,vbs2
+    real(kind=c_float), dimension(:,:,:), allocatable :: dvop
+    real(kind=c_float), dimension(:,:,:,:), allocatable :: dvo
+    real(kind=c_float), dimension(op%ncr) :: vp
+    real(kind=c_float), dimension(ax) :: sumr
     integer :: nb,nsr,i,j,k
     integer :: nor,nir,nr,nol,nl,ni,np  ! surrogates
     IF (op%null_op) THEN
@@ -75,11 +75,11 @@ contains
       vbs2 = v(ax-2:ax,:,:)
       vbs1 = v(1:3,:,:)
       nsr = size(vbs1)
-      call MPI_Sendrecv( vbs2, nsr, MPI_DOUBLE_PRECISION, op%hi, 0, &
-                         vbr1, nsr, MPI_DOUBLE_PRECISION, op%lo, 0, &
+      call MPI_Sendrecv( vbs2, nsr, MPI_REAL, op%hi, 0, &
+                         vbr1, nsr, MPI_REAL, op%lo, 0, &
                          op%hash, mpistatus, mpierr )
-      call MPI_Sendrecv( vbs1, nsr, MPI_DOUBLE_PRECISION, op%lo, 1, &
-                         vbr2, nsr, MPI_DOUBLE_PRECISION, op%hi, 1, &
+      call MPI_Sendrecv( vbs1, nsr, MPI_REAL, op%lo, 1, &
+                         vbr2, nsr, MPI_REAL, op%hi, 1, &
                          op%hash, mpistatus, mpierr )
     else if( op%periodic ) then
       vbr1 = v(ax-2:ax,:,:)
@@ -176,7 +176,7 @@ contains
       nsr = size(dvop)
       select case( op%directcom )
       case( 1 ) ! mpi_allgather
-        call mpi_allgather(dvop,nsr,MPI_DOUBLE_PRECISION,dvo,nsr,MPI_DOUBLE_PRECISION,op%hash,mpierr)
+        call mpi_allgather(dvop,nsr,MPI_REAL,dvo,nsr,MPI_REAL,op%hash,mpierr)
         if( op%periodic ) then
           call ptrid_block4_lus( op%aa, dvo, np, ay, az )
         else
@@ -185,7 +185,7 @@ contains
         if( op%lo /= MPI_PROC_NULL ) forall(i=1:ax,j=1:ay,k=1:az) dv(i,j,k) = dv(i,j,k)-sum(op%rc(i,1:2)*dvo(3:4,j,k,op%lo))
         if( op%hi /= MPI_PROC_NULL ) forall(i=1:ax,j=1:ay,k=1:az) dv(i,j,k) = dv(i,j,k)-sum(op%rc(i,3:4)*dvo(1:2,j,k,op%hi))
       case( 2 ) ! mpi_gather/scatter
-        call mpi_gather(dvop,nsr,MPI_DOUBLE_PRECISION,dvo,nsr,MPI_DOUBLE_PRECISION,0,op%hash,mpierr)
+        call mpi_gather(dvop,nsr,MPI_REAL,dvo,nsr,MPI_REAL,0,op%hash,mpierr)
         if( op%id == 0 ) then  ! only master solves
           if( op%periodic ) then
             call ptrid_block4_lus( op%aa, dvo, np, ay, az )
@@ -204,7 +204,7 @@ contains
         end do
         dvo(1:2,:,:,0) = dvo(3:4,:,:,np-1)
         dvo(3:4,:,:,np-1) = dvop(3:4,:,:)
-        call mpi_scatter(dvo,nsr,MPI_DOUBLE_PRECISION,dvop,nsr,MPI_DOUBLE_PRECISION,0,op%hash,mpierr)
+        call mpi_scatter(dvo,nsr,MPI_REAL,dvop,nsr,MPI_REAL,0,op%hash,mpierr)
         if( op%lo == MPI_PROC_NULL ) dvop(1:2,:,:) = zero
         if( op%hi == MPI_PROC_NULL ) dvop(3:4,:,:) = zero
         forall(i=1:ax,j=1:ay,k=1:az) dv(i,j,k) = dv(i,j,k)-sum(op%rc(i,:)*dvop(:,j,k))
@@ -217,15 +217,15 @@ contains
     implicit none
     class(compact_op1_r3), intent(in) :: op
     integer, intent(in) :: ax,ay,az
-    real(kind=c_double), dimension(ax,ay,az), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2 ! ghost values
-    real(kind=c_double), dimension(:,:), intent(in), optional :: dv1,dv2 ! boundary values
-    real(kind=c_double), dimension(ax,ay,az), intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), allocatable :: vbr1,vbr2,vbs1,vbs2
-    real(kind=c_double), dimension(:,:,:), allocatable :: dvop
-    real(kind=c_double), dimension(:,:,:,:), allocatable :: dvo
-    real(kind=c_double), dimension(op%ncr) :: vp
-    real(kind=c_double), dimension(ay) :: sumr
+    real(kind=c_float), dimension(ax,ay,az), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2 ! ghost values
+    real(kind=c_float), dimension(:,:), intent(in), optional :: dv1,dv2 ! boundary values
+    real(kind=c_float), dimension(ax,ay,az), intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), allocatable :: vbr1,vbr2,vbs1,vbs2
+    real(kind=c_float), dimension(:,:,:), allocatable :: dvop
+    real(kind=c_float), dimension(:,:,:,:), allocatable :: dvo
+    real(kind=c_float), dimension(op%ncr) :: vp
+    real(kind=c_float), dimension(ay) :: sumr
     integer :: nb,nsr,i,j,k
     integer :: nor,nir,nr,nol,nl,ni,np  ! surrogates
     IF (op%null_op) THEN
@@ -254,11 +254,11 @@ contains
       vbs2 = v(:,ay-2:ay,:)
       vbs1 = v(:,1:3,:)
       nsr = size(vbs1)
-      call MPI_Sendrecv( vbs2, nsr, MPI_DOUBLE_PRECISION, op%hi, 0, &
-                         vbr1, nsr, MPI_DOUBLE_PRECISION, op%lo, 0, &
+      call MPI_Sendrecv( vbs2, nsr, MPI_REAL, op%hi, 0, &
+                         vbr1, nsr, MPI_REAL, op%lo, 0, &
                          op%hash, mpistatus, mpierr )
-      call MPI_Sendrecv( vbs1, nsr, MPI_DOUBLE_PRECISION, op%lo, 1, &
-                         vbr2, nsr, MPI_DOUBLE_PRECISION, op%hi, 1, &
+      call MPI_Sendrecv( vbs1, nsr, MPI_REAL, op%lo, 1, &
+                         vbr2, nsr, MPI_REAL, op%hi, 1, &
                          op%hash, mpistatus, mpierr )
     else if( op%periodic ) then
       vbr1 = v(:,ay-2:ay,:)
@@ -355,7 +355,7 @@ contains
       nsr = size(dvop)
       select case( op%directcom )
       case( 1 ) ! mpi_allgather
-        call mpi_allgather(dvop,nsr,MPI_DOUBLE_PRECISION,dvo,nsr,MPI_DOUBLE_PRECISION,op%hash,mpierr)
+        call mpi_allgather(dvop,nsr,MPI_REAL,dvo,nsr,MPI_REAL,op%hash,mpierr)
         if( op%periodic ) then
           call ptrid_block4_lus( op%aa, dvo, np, ax, az )
         else
@@ -364,7 +364,7 @@ contains
         if( op%lo /= MPI_PROC_NULL ) forall(i=1:ax,j=1:ay,k=1:az) dv(i,j,k) = dv(i,j,k)-sum(op%rc(j,1:2)*dvo(3:4,i,k,op%lo))
         if( op%hi /= MPI_PROC_NULL ) forall(i=1:ax,j=1:ay,k=1:az) dv(i,j,k) = dv(i,j,k)-sum(op%rc(j,3:4)*dvo(1:2,i,k,op%hi))
       case( 2 ) ! mpi_gather/scatter
-        call mpi_gather(dvop,nsr,MPI_DOUBLE_PRECISION,dvo,nsr,MPI_DOUBLE_PRECISION,0,op%hash,mpierr)
+        call mpi_gather(dvop,nsr,MPI_REAL,dvo,nsr,MPI_REAL,0,op%hash,mpierr)
         if( op%id == 0 ) then  ! only master solves
           if( op%periodic ) then
             call ptrid_block4_lus( op%aa, dvo, np, ax, az )
@@ -383,7 +383,7 @@ contains
         end do
         dvo(1:2,:,:,0) = dvo(3:4,:,:,np-1)
         dvo(3:4,:,:,np-1) = dvop(3:4,:,:)
-        call mpi_scatter(dvo,nsr,MPI_DOUBLE_PRECISION,dvop,nsr,MPI_DOUBLE_PRECISION,0,op%hash,mpierr)
+        call mpi_scatter(dvo,nsr,MPI_REAL,dvop,nsr,MPI_REAL,0,op%hash,mpierr)
         if( op%lo == MPI_PROC_NULL ) dvop(1:2,:,:) = zero
         if( op%hi == MPI_PROC_NULL ) dvop(3:4,:,:) = zero
         forall(i=1:ax,j=1:ay,k=1:az) dv(i,j,k) = dv(i,j,k)-sum(op%rc(j,:)*dvop(:,i,k))
@@ -396,15 +396,15 @@ contains
     implicit none
     class(compact_op1_r3), intent(in) :: op
     integer, intent(in) :: ax,ay,az
-    real(kind=c_double), dimension(ax,ay,az), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2 ! ghost values
-    real(kind=c_double), dimension(:,:), intent(in), optional :: dv1,dv2 ! boundary values
-    real(kind=c_double), dimension(ax,ay,az), intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), allocatable :: vbr1,vbr2,vbs1,vbs2
-    real(kind=c_double), dimension(:,:,:), allocatable :: dvop
-    real(kind=c_double), dimension(:,:,:,:), allocatable :: dvo
-    real(kind=c_double), dimension(op%ncr) :: vp
-    real(kind=c_double), dimension(az) :: sumr
+    real(kind=c_float), dimension(ax,ay,az), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2 ! ghost values
+    real(kind=c_float), dimension(:,:), intent(in), optional :: dv1,dv2 ! boundary values
+    real(kind=c_float), dimension(ax,ay,az), intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), allocatable :: vbr1,vbr2,vbs1,vbs2
+    real(kind=c_float), dimension(:,:,:), allocatable :: dvop
+    real(kind=c_float), dimension(:,:,:,:), allocatable :: dvo
+    real(kind=c_float), dimension(op%ncr) :: vp
+    real(kind=c_float), dimension(az) :: sumr
     integer :: nb,nsr,i,j,k
     integer :: nor,nir,nr,nol,nl,ni,np  ! surrogates
     IF (op%null_op) THEN
@@ -433,11 +433,11 @@ contains
       vbs2 = v(:,:,az-2:az)
       vbs1 = v(:,:,1:3)
       nsr = size(vbs1)
-      call MPI_Sendrecv( vbs2, nsr, MPI_DOUBLE_PRECISION, op%hi, 0, &
-                         vbr1, nsr, MPI_DOUBLE_PRECISION, op%lo, 0, &
+      call MPI_Sendrecv( vbs2, nsr, MPI_REAL, op%hi, 0, &
+                         vbr1, nsr, MPI_REAL, op%lo, 0, &
                          op%hash, mpistatus, mpierr )
-      call MPI_Sendrecv( vbs1, nsr, MPI_DOUBLE_PRECISION, op%lo, 1, &
-                         vbr2, nsr, MPI_DOUBLE_PRECISION, op%hi, 1, &
+      call MPI_Sendrecv( vbs1, nsr, MPI_REAL, op%lo, 1, &
+                         vbr2, nsr, MPI_REAL, op%hi, 1, &
                          op%hash, mpistatus, mpierr )
     else if( op%periodic ) then
       vbr1 = v(:,:,az-2:az)
@@ -534,7 +534,7 @@ contains
       nsr = size(dvop)
       select case( op%directcom )
       case( 1 ) ! mpi_allgather
-        call mpi_allgather(dvop,nsr,MPI_DOUBLE_PRECISION,dvo,nsr,MPI_DOUBLE_PRECISION,op%hash,mpierr)
+        call mpi_allgather(dvop,nsr,MPI_REAL,dvo,nsr,MPI_REAL,op%hash,mpierr)
         if( op%periodic ) then
           call ptrid_block4_lus( op%aa, dvo, np, ax, ay )
         else
@@ -543,7 +543,7 @@ contains
         if( op%lo /= MPI_PROC_NULL ) forall(i=1:ax,j=1:ay,k=1:az) dv(i,j,k) = dv(i,j,k)-sum(op%rc(k,1:2)*dvo(3:4,i,j,op%lo))
         if( op%hi /= MPI_PROC_NULL ) forall(i=1:ax,j=1:ay,k=1:az) dv(i,j,k) = dv(i,j,k)-sum(op%rc(k,3:4)*dvo(1:2,i,j,op%hi))
       case( 2 ) ! mpi_gather/scatter
-        call mpi_gather(dvop,nsr,MPI_DOUBLE_PRECISION,dvo,nsr,MPI_DOUBLE_PRECISION,0,op%hash,mpierr)
+        call mpi_gather(dvop,nsr,MPI_REAL,dvo,nsr,MPI_REAL,0,op%hash,mpierr)
         if( op%id == 0 ) then  ! only master solves
           if( op%periodic ) then
             call ptrid_block4_lus( op%aa, dvo, np, ax, ay )
@@ -562,7 +562,7 @@ contains
         end do
         dvo(1:2,:,:,0) = dvo(3:4,:,:,np-1)
         dvo(3:4,:,:,np-1) = dvop(3:4,:,:)
-        call mpi_scatter(dvo,nsr,MPI_DOUBLE_PRECISION,dvop,nsr,MPI_DOUBLE_PRECISION,0,op%hash,mpierr)
+        call mpi_scatter(dvo,nsr,MPI_REAL,dvop,nsr,MPI_REAL,0,op%hash,mpierr)
         if( op%lo == MPI_PROC_NULL ) dvop(1:2,:,:) = zero
         if( op%hi == MPI_PROC_NULL ) dvop(3:4,:,:) = zero
         forall(i=1:ax,j=1:ay,k=1:az) dv(i,j,k) = dv(i,j,k)-sum(op%rc(k,:)*dvop(:,i,j))

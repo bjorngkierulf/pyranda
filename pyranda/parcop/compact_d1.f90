@@ -19,7 +19,7 @@ module LES_compact_d1
   logical(c_bool) :: bpp_lus_opt = .true. , use_ppent_opt = .true. 
 
   
-  REAL(KIND=c_double), PARAMETER :: zero=0.0_c_double, one=1.0_c_double
+  Real(kind=c_float), PARAMETER :: zero=0.0_c_double, one=1.0_c_double
   LOGICAL(c_bool) :: debug=.false.
 
   ! these extensions override the generic operations
@@ -39,11 +39,11 @@ contains
     implicit none
     class(compact_op1_d1), intent(in) :: op
     integer, intent(in) :: ax,ay,az
-    real(kind=c_double), dimension(ax,ay,az), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2 ! ghost values
-    real(kind=c_double), dimension(:,:), intent(in), optional :: dv1,dv2 ! boundary values
-    real(kind=c_double), dimension(ax,ay,az), intent(out) :: dv
-    real(kind=c_double), dimension(ay,ax) :: dv_tran
+    real(kind=c_float), dimension(ax,ay,az), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2 ! ghost values
+    real(kind=c_float), dimension(:,:), intent(in), optional :: dv1,dv2 ! boundary values
+    real(kind=c_float), dimension(ax,ay,az), intent(out) :: dv
+    real(kind=c_float), dimension(ay,ax) :: dv_tran
     integer :: nb,nsr,i,j,k
     integer :: nor,nir,nr,nol,nl,ni,np,dc ! surrogates
     character(len=160) :: filename
@@ -90,11 +90,11 @@ contains
       !$omp end target teams distribute parallel do
       nsr = size(vbs1x)
       !$omp target data use_device_ptr(vbs1x,vbs2x,vbr1x,vbr2x) if(gpu_kernel==1)   ! use GPU Direct MPI
-      call MPI_Sendrecv( vbs2x, nsr, MPI_DOUBLE_PRECISION, op%hi, 0, &
-                         vbr1x, nsr, MPI_DOUBLE_PRECISION, op%lo, 0, &
+      call MPI_Sendrecv( vbs2x, nsr, MPI_REAL, op%hi, 0, &
+                         vbr1x, nsr, MPI_REAL, op%lo, 0, &
                          op%hash, mpistatus, mpierr )
-      call MPI_Sendrecv( vbs1x, nsr, MPI_DOUBLE_PRECISION, op%lo, 1, &
-                         vbr2x, nsr, MPI_DOUBLE_PRECISION, op%hi, 1, &
+      call MPI_Sendrecv( vbs1x, nsr, MPI_REAL, op%lo, 1, &
+                         vbr2x, nsr, MPI_REAL, op%hi, 1, &
                          op%hash, mpistatus, mpierr )
       !$omp end target data
     else if( op%periodic ) then
@@ -270,7 +270,7 @@ contains
       select case( dc )
       case( 1 ) ! mpi_allgather
       	!$omp target data use_device_ptr(dvopx,dvox) if(gpu_kernel==1)
-        call mpi_allgather(dvopx,nsr,MPI_DOUBLE_PRECISION,dvox,nsr,MPI_DOUBLE_PRECISION,op%hash,mpierr)
+        call mpi_allgather(dvopx,nsr,MPI_REAL,dvox,nsr,MPI_REAL,op%hash,mpierr)
         !$omp end target data
         if( op%periodic ) then
          	call ptrid_block4_lus( op%aa, dvox, np, ay, az )	! cpu solver
@@ -310,7 +310,7 @@ contains
            !$omp end target teams distribute parallel do
         end if
       case( 2 ) ! mpi_gather/scatter
-        call mpi_gather(dvopx,nsr,MPI_DOUBLE_PRECISION,dvox,nsr,MPI_DOUBLE_PRECISION,0,op%hash,mpierr)
+        call mpi_gather(dvopx,nsr,MPI_REAL,dvox,nsr,MPI_REAL,0,op%hash,mpierr)
         if( op%id == 0 ) then  ! only master solves
           if( op%periodic ) then
            	call ptrid_block4_lus( op%aa, dvox, np, ay, az )
@@ -329,7 +329,7 @@ contains
         end do
         dvox(1:2,:,:,0) = dvox(3:4,:,:,np-1)
         dvox(3:4,:,:,np-1) = dvopx(3:4,:,:)
-        call mpi_scatter(dvox,nsr,MPI_DOUBLE_PRECISION,dvopx,nsr,MPI_DOUBLE_PRECISION,0,op%hash,mpierr)
+        call mpi_scatter(dvox,nsr,MPI_REAL,dvopx,nsr,MPI_REAL,0,op%hash,mpierr)
         if( op%lo == MPI_PROC_NULL ) dvopx(1:2,:,:) = zero
         if( op%hi == MPI_PROC_NULL ) dvopx(3:4,:,:) = zero
         forall(i=1:ax,j=1:ay,k=1:az) dv(i,j,k) = dv(i,j,k)-sum(op%rc(i,:)*dvopx(:,j,k))
@@ -342,10 +342,10 @@ contains
     implicit none
     class(compact_op1_d1), intent(in) :: op
     integer, intent(in) :: ax,ay,az
-    real(kind=c_double), dimension(ax,ay,az), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2 ! ghost values
-    real(kind=c_double), dimension(:,:), intent(in), optional :: dv1,dv2 ! boundary values
-    real(kind=c_double), dimension(ax,ay,az), intent(out) :: dv
+    real(kind=c_float), dimension(ax,ay,az), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2 ! ghost values
+    real(kind=c_float), dimension(:,:), intent(in), optional :: dv1,dv2 ! boundary values
+    real(kind=c_float), dimension(ax,ay,az), intent(out) :: dv
     integer :: nb,nsr,i,j,k,n
     integer :: nor,nir,nr,nol,nl,ni,np,dc  ! surrogates
 !---------------------------------------------------------------------------------------------------
@@ -389,11 +389,11 @@ contains
       !$omp end target teams distribute parallel do
       nsr = size(vbs1y)
       !$omp target data use_device_ptr(vbs1y,vbs2y,vbr1y,vbr2y)	 if(gpu_kernel==1)			! Using Peer-to-peer memory transfers
-      call MPI_Sendrecv( vbs2y, nsr, MPI_DOUBLE_PRECISION, op%hi, 0, &
-                         vbr1y, nsr, MPI_DOUBLE_PRECISION, op%lo, 0, &
+      call MPI_Sendrecv( vbs2y, nsr, MPI_REAL, op%hi, 0, &
+                         vbr1y, nsr, MPI_REAL, op%lo, 0, &
                          op%hash, mpistatus, mpierr )
-      call MPI_Sendrecv( vbs1y, nsr, MPI_DOUBLE_PRECISION, op%lo, 1, &
-                         vbr2y, nsr, MPI_DOUBLE_PRECISION, op%hi, 1, &
+      call MPI_Sendrecv( vbs1y, nsr, MPI_REAL, op%lo, 1, &
+                         vbr2y, nsr, MPI_REAL, op%hi, 1, &
                          op%hash, mpistatus, mpierr )
       !$omp end target data
     else if( op%periodic ) then
@@ -553,7 +553,7 @@ contains
       select case( dc )
       case( 1 ) ! mpi_allgather
       	!$omp target data use_device_ptr(dvopy, dvoy) if(gpu_kernel==1)
-        call mpi_allgather(dvopy,nsr,MPI_DOUBLE_PRECISION,dvoy,nsr,MPI_DOUBLE_PRECISION,op%hash,mpierr)
+        call mpi_allgather(dvopy,nsr,MPI_REAL,dvoy,nsr,MPI_REAL,op%hash,mpierr)
         !$omp end target data
         
         if( op%periodic ) then
@@ -596,7 +596,7 @@ contains
         
       case( 2 ) ! mpi_gather/scatter
 				!$omp target data use_device_ptr(dvopy, dvoy) if(gpu_kernel==1)
-        call mpi_gather(dvopy,nsr,MPI_DOUBLE_PRECISION,dvoy,nsr,MPI_DOUBLE_PRECISION,0,op%hash,mpierr)
+        call mpi_gather(dvopy,nsr,MPI_REAL,dvoy,nsr,MPI_REAL,0,op%hash,mpierr)
         !$omp end target data
         if( op%id == 0 ) then  ! only master solves
           if( op%periodic ) then
@@ -642,7 +642,7 @@ contains
         !$omp end target teams distribute parallel do
 
         !$omp target data use_device_ptr(dvoy,dvopy) if(gpu_kernel==1)
-        call mpi_scatter(dvoy,nsr,MPI_DOUBLE_PRECISION,dvopy,nsr,MPI_DOUBLE_PRECISION,0,op%hash,mpierr)
+        call mpi_scatter(dvoy,nsr,MPI_REAL,dvopy,nsr,MPI_REAL,0,op%hash,mpierr)
         !$omp end target data
         if( op%lo == MPI_PROC_NULL ) then
          !$omp target teams distribute parallel do collapse(2) if(gpu_kernel==1)
@@ -680,10 +680,10 @@ contains
     implicit none
     class(compact_op1_d1), intent(in) :: op
     integer, intent(in) :: ax,ay,az
-    real(kind=c_double), dimension(ax,ay,az), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2 ! ghost values
-    real(kind=c_double), dimension(:,:), intent(in), optional :: dv1,dv2 ! boundary values
-    real(kind=c_double), dimension(ax,ay,az), intent(out) :: dv
+    real(kind=c_float), dimension(ax,ay,az), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2 ! ghost values
+    real(kind=c_float), dimension(:,:), intent(in), optional :: dv1,dv2 ! boundary values
+    real(kind=c_float), dimension(ax,ay,az), intent(out) :: dv
     integer :: nb,nsr,i,j,k,n
     integer :: nor,nir,nr,nol,nl,ni,np,dc  ! surrogates
 !---------------------------------------------------------------------------------------------------
@@ -726,11 +726,11 @@ contains
 		  !$omp end target teams distribute parallel do
       nsr = size(vbs1z)
       !$omp target data use_device_ptr(vbs1z,vbs2z,vbr1z,vbr2z) if(gpu_kernel==1)
-      call MPI_Sendrecv( vbs2z, nsr, MPI_DOUBLE_PRECISION, op%hi, 0, &
-                         vbr1z, nsr, MPI_DOUBLE_PRECISION, op%lo, 0, &
+      call MPI_Sendrecv( vbs2z, nsr, MPI_REAL, op%hi, 0, &
+                         vbr1z, nsr, MPI_REAL, op%lo, 0, &
                          op%hash, mpistatus, mpierr )
-      call MPI_Sendrecv( vbs1z, nsr, MPI_DOUBLE_PRECISION, op%lo, 1, &
-                         vbr2z, nsr, MPI_DOUBLE_PRECISION, op%hi, 1, &
+      call MPI_Sendrecv( vbs1z, nsr, MPI_REAL, op%lo, 1, &
+                         vbr2z, nsr, MPI_REAL, op%hi, 1, &
                          op%hash, mpistatus, mpierr )
       !$omp end target data
     else if( op%periodic ) then
@@ -887,7 +887,7 @@ contains
       select case( dc )
       case( 1 ) ! mpi_allgather
       	!$omp target data use_device_ptr(dvopz, dvoz) if(gpu_kernel==1)
-        call mpi_allgather(dvopz,nsr,MPI_DOUBLE_PRECISION,dvoz,nsr,MPI_DOUBLE_PRECISION,op%hash,mpierr)
+        call mpi_allgather(dvopz,nsr,MPI_REAL,dvoz,nsr,MPI_REAL,op%hash,mpierr)
         !$omp end target data
         if( op%periodic ) then
          	call ptrid_block4_lus( op%aa, dvoz, op%np, ax, ay ) ! cpu solver
@@ -928,7 +928,7 @@ contains
         end if
       case( 2 ) ! mpi_gather/scatter
       	!$omp target data use_device_ptr( dvopz,dvoz ) if(gpu_kernel==1)
-        call mpi_gather(dvopz,nsr,MPI_DOUBLE_PRECISION,dvoz,nsr,MPI_DOUBLE_PRECISION,0,op%hash,mpierr)
+        call mpi_gather(dvopz,nsr,MPI_REAL,dvoz,nsr,MPI_REAL,0,op%hash,mpierr)
         !$omp end target data
         if( op%id == 0 ) then  ! only master solves
           if( op%periodic ) then
@@ -961,7 +961,7 @@ contains
         end do ! i
         !$omp end target teams distribute parallel do
         !$omp target data use_device_ptr(dvoz,dvopz) if(gpu_kernel==1)
-        call mpi_scatter(dvoz,nsr,MPI_DOUBLE_PRECISION,dvopz,nsr,MPI_DOUBLE_PRECISION,0,op%hash,mpierr)
+        call mpi_scatter(dvoz,nsr,MPI_REAL,dvopz,nsr,MPI_REAL,0,op%hash,mpierr)
         !$omp end target data
         !$omp target teams if(gpu_kernel==1)
         if( op%lo == MPI_PROC_NULL ) then

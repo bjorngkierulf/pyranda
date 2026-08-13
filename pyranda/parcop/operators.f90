@@ -38,9 +38,9 @@
    SUBROUTINE divV(fx,fy,fz,df,ax,ay,az)
     IMPLICIT NONE
     INTEGER(c_int), INTENT(IN) :: ax,ay,az 
-    DOUBLE PRECISION, DIMENSION(ax,ay,az), INTENT(IN) :: fx,fy,fz
-    DOUBLE PRECISION, DIMENSION(ax,ay,az), INTENT(OUT) :: df
-    DOUBLE PRECISION, DIMENSION(ax,ay,az) :: fA,fB,fC,tmp
+    REAL, DIMENSION(ax,ay,az), INTENT(IN) :: fx,fy,fz
+    REAL, DIMENSION(ax,ay,az), INTENT(OUT) :: df
+    REAL, DIMENSION(ax,ay,az) :: fA,fB,fC,tmp
     !$DEF-FEXL
     !$omp target data map(alloc:fA,fB,fC,tmp)
      SELECT CASE(patch_ptr%coordsys)
@@ -96,9 +96,9 @@
 ! DIVERGENCE OF A TENSOR ===========================================================================
    SUBROUTINE divT(fxx,fxy,fxz,fyx,fyy,fyz,fzx,fzy,fzz,dfx,dfy,dfz)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: fxx,fxy,fxz,fyx,fyy,fyz,fzx,fzy,fzz
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: dfx,dfy,dfz
-    DOUBLE PRECISION, DIMENSION(SIZE(fxx,1),SIZE(fxx,2),SIZE(fxx,3)) :: fA,fB,fC,tmp
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: fxx,fxy,fxz,fyx,fyy,fyz,fzx,fzy,fzz
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: dfx,dfy,dfz
+    REAL, DIMENSION(SIZE(fxx,1),SIZE(fxx,2),SIZE(fxx,3)) :: fA,fB,fC,tmp
     !$DEF-FEXL
     !$omp target data map(alloc:fA,fB,fC,tmp)
      SELECT CASE(patch_ptr%coordsys)
@@ -183,9 +183,9 @@
 ! GRADIENT OF A SCALAR =============================================================================
    SUBROUTINE gradS(f,dfdx,dfdy,dfdz)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: f
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: dfdx,dfdy,dfdz
-    DOUBLE PRECISION, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: dfdA,dfdB,dfdC
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: f
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: dfdx,dfdy,dfdz
+    REAL, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: dfdA,dfdB,dfdC
     !$DEF-FEXL
     !$omp target data map(alloc:dfdA,dfdB,dfdC)
      CALL ddx(f,dfdx)
@@ -214,10 +214,10 @@
 ! GRADIENT OF A VECTOR COMPONENT =============================================================================
    SUBROUTINE gradVc(f,dfdx,dfdy,dfdz,vc)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: f
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: dfdx,dfdy,dfdz
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: f
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: dfdx,dfdy,dfdz
     INTEGER, INTENT(IN) :: vc
-    DOUBLE PRECISION, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: dfdA,dfdB,dfdC
+    REAL, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: dfdA,dfdB,dfdC
     !$DEF-FEXL
     !$omp target data map(alloc:dfdA,dfdB,dfdC)
      SELECT CASE( vc )
@@ -253,10 +253,10 @@
 ! GRADIENT OF A TENSOR COMPONENT =============================================================================
    SUBROUTINE gradTc(f,dfdx,dfdy,dfdz,tc)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: f
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: dfdx,dfdy,dfdz
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: f
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: dfdx,dfdy,dfdz
     CHARACTER(LEN=2), INTENT(IN) :: tc
-    DOUBLE PRECISION, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: dfdA,dfdB,dfdC
+    REAL, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: dfdA,dfdB,dfdC
     !$DEF-FEXL
      SELECT CASE( tc )
      CASE( 'xx', 'yy', 'zz' )
@@ -292,9 +292,9 @@
 ! GRADIENT OF A VECTOR =============================================================================
    SUBROUTINE gradV(fx,fy,fz,dfxx,dfxy,dfxz,dfyx,dfyy,dfyz,dfzx,dfzy,dfzz)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: fx,fy,fz
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: dfxx,dfxy,dfxz,dfyx,dfyy,dfyz,dfzx,dfzy,dfzz
-    DOUBLE PRECISION, DIMENSION(SIZE(fx,1),SIZE(fx,2),SIZE(fx,3)) :: dfdA,dfdB,dfdC
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: fx,fy,fz
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: dfxx,dfxy,dfxz,dfyx,dfyy,dfyz,dfzx,dfzy,dfzz
+    REAL, DIMENSION(SIZE(fx,1),SIZE(fx,2),SIZE(fx,3)) :: dfdA,dfdB,dfdC
     !$DEF-FEXL
      CALL ddx(fx,dfxx,patch_ptr%isymX)
      CALL ddx(fy,dfxy)
@@ -341,9 +341,9 @@
 ! CURL OF A VECTOR =================================================================================
 !   SUBROUTINE curlV(fx,fy,fz,cx,cy,cz)
 !    IMPLICIT NONE
-!    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: fx,fy,fz
-!    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: cx,cy,cz
-!    DOUBLE PRECISION, DIMENSION(SIZE(fx,1),SIZE(fx,2),SIZE(fx,3)) :: tx,ty,tz,tmp
+!    REAL, DIMENSION(:,:,:), INTENT(IN) :: fx,fy,fz
+!    REAL, DIMENSION(:,:,:), INTENT(OUT) :: cx,cy,cz
+!    REAL, DIMENSION(SIZE(fx,1),SIZE(fx,2),SIZE(fx,3)) :: tx,ty,tz,tmp
 !     SELECT CASE(patch_ptr%coordsys)
 !     CASE(0) ! Cartesian
 !      CALL ddy(fz,cx)
@@ -389,9 +389,9 @@
 !      tz = tmp/mesh_ptr%xgrid
 !      cz = cz - tz
 !     CASE(3) ! Hack to avoid NANs in cylinder_curvy.csv file
-!      cx = 0.0D0
-!      cy = 0.0D0
-!      cz = 0.0D0      
+!      cx = 0.0E0
+!      cy = 0.0E0
+!      cz = 0.0E0      
 !     END SELECT
 !   END SUBROUTINE curlV
  
@@ -399,9 +399,9 @@
    SUBROUTINE curlV(vsym,fx,fy,fz,cx,cy,cz)
     IMPLICIT NONE
     INTEGER(c_int), INTENT(IN) :: vsym
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: fx,fy,fz
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: cx,cy,cz
-    DOUBLE PRECISION, DIMENSION(SIZE(fx,1),SIZE(fx,2),SIZE(fx,3)) :: tx,ty,tz,tmp
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: fx,fy,fz
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: cx,cy,cz
+    REAL, DIMENSION(SIZE(fx,1),SIZE(fx,2),SIZE(fx,3)) :: tx,ty,tz,tmp
     INTEGER(c_int) :: isymX,isymY,isymZ
      isymX = -vsym*patch_ptr%isymX
      isymY = -vsym*patch_ptr%isymY    
@@ -454,9 +454,9 @@
       cz = cz - tz
 !---------------------------------------------------------------------------------------------------      
      CASE(3) ! Hack to avoid NANs in cylinder_curvy.csv file
-      cx = 0.0D0
-      cy = 0.0D0
-      cz = 0.0D0      
+      cx = 0.0E0
+      cy = 0.0E0
+      cz = 0.0E0      
      END SELECT
    END SUBROUTINE curlV
  
@@ -464,9 +464,9 @@
    ! This needs symmetry switch for symmetric/anti-symmetric tensors.
    SUBROUTINE curlT(fxx,fxy,fxz,fyx,fyy,fyz,fzx,fzy,fzz,ttxx,ttxy,ttxz,ttyx,ttyy,ttyz,ttzx,ttzy,ttzz)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: fxx,fxy,fxz,fyx,fyy,fyz,fzx,fzy,fzz
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: ttxx,ttxy,ttxz,ttyx,ttyy,ttyz,ttzx,ttzy,ttzz
-    DOUBLE PRECISION, DIMENSION(SIZE(fxx,1),SIZE(fxx,2),SIZE(fxx,3)) :: tmp!tx,ty,tz
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: fxx,fxy,fxz,fyx,fyy,fyz,fzx,fzy,fzz
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: ttxx,ttxy,ttxz,ttyx,ttyy,ttyz,ttzx,ttzy,ttzz
+    REAL, DIMENSION(SIZE(fxx,1),SIZE(fxx,2),SIZE(fxx,3)) :: tmp!tx,ty,tz
      SELECT CASE(patch_ptr%coordsys)
      CASE(0) ! Cartesian
       CALL ddy(fzx,ttxx);                  CALL ddz(fyx,tmp);                 ttxx = ttxx - tmp
@@ -512,9 +512,9 @@
 ! LAPLACIAN OF A SCALAR ============================================================================ 
    SUBROUTINE LapS(f,Lapf)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: f
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: Lapf
-    DOUBLE PRECISION, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: tmp,dum
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: f
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: Lapf
+    REAL, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: tmp,dum
     !$DEF-FEXL
     !$omp target data map(alloc:tmp,dum)
 ! SYMMETRY SWITCHES?--------------------------------------------------------------------------------    
@@ -564,25 +564,25 @@
 ! LAPLACIAN OF A VECTOR ============================================================================ 
    SUBROUTINE LapV(fx,fy,fz,Lx,Ly,Lz)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: fx,fy,fz
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: Lx,Ly,Lz
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: fx,fy,fz
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: Lx,Ly,Lz
      SELECT CASE(patch_ptr%coordsys)
      CASE(0) ! Cartesian
      CASE(1) ! Cylindrical
      CASE(2) ! Spherical
      CASE(3) ! General
      END SELECT
-     Lx = 0.0D0
-     Ly = 0.0D0
-     Lz = 0.0D0
+     Lx = 0.0E0
+     Ly = 0.0E0
+     Lz = 0.0E0
    END SUBROUTINE LapV
 
 ! CROSS PRODUCT OF TWO VECTORS =================================================================================
    SUBROUTINE VcrossV(ux,uy,uz,cx,cy,cz)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: ux,uy,uz    ! first vector
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: cx,cy,cz   ! second vector on input; result on output
-    DOUBLE PRECISION, DIMENSION(SIZE(ux,1),SIZE(ux,2),SIZE(ux,3)) :: tx,ty,tz
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: ux,uy,uz    ! first vector
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: cx,cy,cz   ! second vector on input; result on output
+    REAL, DIMENSION(SIZE(ux,1),SIZE(ux,2),SIZE(ux,3)) :: tx,ty,tz
      !SELECT CASE(patch_ptr%coordsys)
      !CASE(0) ! Cartesian
      !CASE(1) ! Cylindrical
@@ -597,9 +597,9 @@
 ! CROSS PRODUCT OF A VECTOR AND A TENSOR =================================================================================
    SUBROUTINE VcrossT(ux,uy,uz,fxx,fxy,fxz,fyx,fyy,fyz,fzx,fzy,fzz,ttxx,ttxy,ttxz,ttyx,ttyy,ttyz,ttzx,ttzy,ttzz)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: ux,uy,uz                                        ! input vector
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: fxx,fxy,fxz,fyx,fyy,fyz,fzx,fzy,fzz             ! input tensor
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: ttxx,ttxy,ttxz,ttyx,ttyy,ttyz,ttzx,ttzy,ttzz   ! output tensor
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: ux,uy,uz                                        ! input vector
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: fxx,fxy,fxz,fyx,fyy,fyz,fzx,fzy,fzz             ! input tensor
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: ttxx,ttxy,ttxz,ttyx,ttyy,ttyz,ttzx,ttzy,ttzz   ! output tensor
      !SELECT CASE(patch_ptr%coordsys)
      !CASE(0) ! Cartesian
      !CASE(1) ! Cylindrical
@@ -614,10 +614,10 @@
 
    SUBROUTINE ringS(f,fbar,L) ! adds cm^L to the dimensions of f
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: f
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: fbar
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: f
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: fbar
     INTEGER,                            INTENT(IN) :: L
-    DOUBLE PRECISION, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: ring1,ring2,ring3
+    REAL, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: ring1,ring2,ring3
     !$DEF-FEXL
     !CALL exosim_annotation_begin("operators.ringS")
     !$omp target data map(alloc:ring1,ring2,ring3)    
@@ -644,14 +644,14 @@
      
    SUBROUTINE ringV(f,g,h,fbar,L) ! adds cm^L to the dimensions of (f,g,h)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: f,g,h
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: fbar
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: f,g,h
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: fbar
     INTEGER,                            INTENT(IN) :: L
-    !DOUBLE PRECISION, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: ringV
-    DOUBLE PRECISION, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: ringxL,ringyL,ringzL
-    DOUBLE PRECISION, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: ringx1,ringy1,ringz1
-    DOUBLE PRECISION, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: ringx2,ringy2,ringz2
-    DOUBLE PRECISION, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: ringx3,ringy3,ringz3
+    !REAL, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: ringV
+    REAL, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: ringxL,ringyL,ringzL
+    REAL, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: ringx1,ringy1,ringz1
+    REAL, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: ringx2,ringy2,ringz2
+    REAL, DIMENSION(SIZE(f,1),SIZE(f,2),SIZE(f,3)) :: ringx3,ringy3,ringz3
     !$DEF-FEXL
     !CALL exosim_annotation_begin("operators.ringV")
     !$omp target data map(alloc:ringx1,ringx2,ringx3) & 
@@ -700,15 +700,15 @@
 
    SUBROUTINE ringx(f,fbar,bc)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: f
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: fbar
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: f
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: fbar
     INTEGER, INTENT(IN), OPTIONAL :: bc
     INTEGER :: n
     !$DEF-FEXL
     !CALL exosim_annotation_begin("operators.ringx")
      IF (SIZE(f,1) == 1) THEN
         !$FEXL {dim:3,var:['fbar']}
-        fbar = 0.0D0
+        fbar = 0.0E0
         !$END FEXL
      ELSE
         CALL d8x(f,fbar,bc)
@@ -718,15 +718,15 @@
 
    SUBROUTINE ringy(f,fbar,bc)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: f
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: fbar
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: f
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: fbar
     INTEGER, INTENT(IN), OPTIONAL :: bc
     INTEGER :: n
     !$DEF-FEXL
     !CALL exosim_annotation_begin("operators.ringy")
      IF (SIZE(f,2) == 1) THEN
         !$FEXL {dim:3,var:['fbar']}
-        fbar = 0.0D0
+        fbar = 0.0E0
         !$END FEXL
      ELSE
        CALL d8y(f,fbar,bc)
@@ -736,15 +736,15 @@
 
    SUBROUTINE ringz(f,fbar,bc)
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: f
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: fbar
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: f
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: fbar
     INTEGER, INTENT(IN), OPTIONAL :: bc
     INTEGER :: n
     !$DEF-FEXL
     !CALL exosim_annotation_begin("operators.ringz")
      IF (SIZE(f,3) == 1) THEN
         !$FEXL {dim:3,var:['fbar']}
-        fbar = 0.0D0
+        fbar = 0.0E0
         !$END FEXL
      ELSE
        CALL d8z(f,fbar,bc)
@@ -755,11 +755,11 @@
    SUBROUTINE filterGdir(filtype,fun,bar,direction)
     IMPLICIT NONE
     CHARACTER(LEN=*), INTENT(IN) :: filtype
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: fun
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: bar
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: fun
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: bar
     INTEGER, INTENT(IN)  :: direction ! 1-x,2-y,3-z
-    DOUBLE PRECISION, DIMENSION(SIZE(fun,1),SIZE(fun,2),SIZE(fun,3)) :: tmp
-    REAL(c_double), DIMENSION(:,:,:), POINTER :: CellBar
+    REAL, DIMENSION(SIZE(fun,1),SIZE(fun,2),SIZE(fun,3)) :: tmp
+    REAL(c_float), DIMENSION(:,:,:), POINTER :: CellBar
     INTEGER :: filnum,xasym,yasym,zasym
 
     ASSOCIATE( Gfilter=>compact_ptr%control%gfspec )
@@ -781,20 +781,20 @@
    SUBROUTINE filter(filtype,fun,bar,component,vsym)
     IMPLICIT NONE
     CHARACTER(LEN=*), INTENT(IN) :: filtype
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(IN) :: fun
-    DOUBLE PRECISION, DIMENSION(:,:,:), INTENT(OUT) :: bar
+    REAL, DIMENSION(:,:,:), INTENT(IN) :: fun
+    REAL, DIMENSION(:,:,:), INTENT(OUT) :: bar
     INTEGER(c_int), INTENT(IN), OPTIONAL :: component ! -1=no filter, 0=scalar, 1=x, 2=y, 3=z
     INTEGER(c_int), INTENT(IN), OPTIONAL :: vsym ! symmetry flag for anti-symmetric magnetic field
     LOGICAL, PARAMETER :: sharp = .TRUE.
-    DOUBLE PRECISION, DIMENSION(SIZE(fun,1),SIZE(fun,2),SIZE(fun,3)) :: tmp
-    REAL(c_double), DIMENSION(:,:,:), POINTER :: CellBar
+    REAL, DIMENSION(SIZE(fun,1),SIZE(fun,2),SIZE(fun,3)) :: tmp
+    REAL(c_float), DIMENSION(:,:,:), POINTER :: CellBar
     INTEGER :: filnum,xasym,yasym,zasym
     !$DEF-FEXL
 
     !$omp target enter data map(alloc:tmp)
     
     !$FEXL {dim:3,var:['tmp']}
-    tmp = 0.0D0
+    tmp = 0.0E0
     !$END FEXL
 
     
@@ -905,11 +905,11 @@
 
      INTEGER, INTENT(IN) :: Nspan,Ni,No,Nbuff
      INTEGER, INTENT(IN) :: ny,nz,iy1,iz1,ay,az
-     DOUBLE PRECISION, INTENT(IN) :: y_r(ay)
-     DOUBLE PRECISION, INTENT(IN) ::  rands(ny+Nbuff,nz+Nbuff)
-     DOUBLE PRECISION, INTENT(IN) ::  bmnI(2*Ni+1,2*Nspan+1), bmnO(2*No+1,2*Nspan+1)
-     DOUBLE PRECISION, DIMENSION(ay,az), INTENT(OUT) :: vfilt(ay,az)
-     DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: filt
+     REAL, INTENT(IN) :: y_r(ay)
+     REAL, INTENT(IN) ::  rands(ny+Nbuff,nz+Nbuff)
+     REAL, INTENT(IN) ::  bmnI(2*Ni+1,2*Nspan+1), bmnO(2*No+1,2*Nspan+1)
+     REAL, DIMENSION(ay,az), INTENT(OUT) :: vfilt(ay,az)
+     REAL, DIMENSION(:,:), ALLOCATABLE :: filt
 
      INTEGER :: N1,N2
      INTEGER :: j,k,m,n,mm,nn
@@ -919,7 +919,7 @@
      DO j=1,ay
 
         ! Inner Layer
-        IF( y_r(j) < 1.0D0 ) THEN
+        IF( y_r(j) < 1.0E0 ) THEN
            N1 = Ni
            IF(.NOT. ALLOCATED(filt)) ALLOCATE(filt(SIZE(bmnI,1),SIZE(bmnI,2) )  )
            filt = bmnI
@@ -931,7 +931,7 @@
         END IF
         
         DO k=1,az
-           vfilt(j,k) = 0.0D0
+           vfilt(j,k) = 0.0E0
            
            DO m=-N1,N1,1
               mG = (iy1 ) + j + (m + N1)
@@ -954,13 +954,13 @@
 
    SUBROUTINE get_rands_normal(rands,ny,nz,Nbuff,time_seed)
      IMPLICIT NONE
-     DOUBLE PRECISION, DIMENSION(4,ny+Nbuff,nz+Nbuff),INTENT(OUT) :: rands
+     REAL, DIMENSION(4,ny+Nbuff,nz+Nbuff),INTENT(OUT) :: rands
      INTEGER, INTENT(IN) :: ny,nz,Nbuff
      INTEGER, INTENT(IN) :: time_seed 
      integer, allocatable :: seed(:)
-     DOUBLE PRECISION, DIMENSION(4,ny+Nbuff,nz+Nbuff) :: rtmp
+     REAL, DIMENSION(4,ny+Nbuff,nz+Nbuff) :: rtmp
      integer :: n
-     DOUBLE PRECISION :: two=2.0D0,pi=3.14159265359
+     REAL :: two=2.0E0,pi=3.14159265359
 
      call random_seed(size = n)
      allocate(seed(n))

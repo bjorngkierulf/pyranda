@@ -12,12 +12,15 @@ from __future__ import print_function
 from mpi4py import MPI
 import numpy 
 from numpy import nan
+import numpy as np
 import re
 import sys,os
 import time,random
 import glob
 import inspect
 import scipy
+
+precision=numpy.float32
 
 from .pyrandaMPI   import pyrandaMPI
 from .pyrandaVar   import pyrandaVar
@@ -510,6 +513,7 @@ class pyrandaSim:
         supported_types.append(type({}))
         supported_types.append(type(None))
         supported_types.append(type(numpy.float64))
+        supported_types.append(type(numpy.float32))
         supported_types.append(type(True))
         
         # Check if ivars dictionary is passed
@@ -598,7 +602,7 @@ class pyrandaSim:
         wlen = 3
         shape = list(self.mesh.shape)
         shape.append( wlen )
-        iodata = numpy.zeros( shape )
+        iodata = numpy.zeros( shape, dtype=precision )
         for i in range( 3 ):
             iodata[:,:,:,i] = self.mesh.coords[i].data
 
@@ -789,9 +793,9 @@ class pyrandaSim:
         tmp2 = {}
         PHI  = {}
         for U in self.conserved: 
-            tmp1[U] = numpy.asfortranarray( numpy.zeros(  shape ) )
-            tmp2[U] = numpy.asfortranarray( numpy.zeros(  shape ) )
-            PHI[U]  = numpy.asfortranarray( numpy.zeros(  shape ) )
+            tmp1[U] = numpy.asfortranarray( numpy.zeros(  shape, dtype=precision ) )
+            tmp2[U] = numpy.asfortranarray( numpy.zeros(  shape, dtype=precision ) )
+            PHI[U]  = numpy.asfortranarray( numpy.zeros(  shape, dtype=precision ) )
         
         # Get primative flow variables
         #self.updateVars()
@@ -921,11 +925,11 @@ class pyrandaSim:
         if not PHI:
             PHI  = {}
             for U in self.conserved: 
-                PHI[U]  = numpy.asfortranarray( numpy.zeros(  shape ) )
+                PHI[U]  = numpy.asfortranarray( numpy.zeros(  shape , dtype=precision) )
         
         for U in self.conserved: 
-            tmp1[U] = numpy.asfortranarray( numpy.zeros(  shape ) )
-            tmp2[U] = numpy.asfortranarray( numpy.zeros(  shape ) )
+            tmp1[U] = numpy.asfortranarray( numpy.zeros(  shape , dtype=precision) )
+            tmp2[U] = numpy.asfortranarray( numpy.zeros(  shape , dtype=precision) )
         
         # Get primative flow variables
 
@@ -980,6 +984,7 @@ class pyrandaSim:
 
 
 def pyrandaRestart(rootname,suffix=None,comm=None):
+    from importlib import import_module
     from numpy import array,int32
     import numpy as npy
     npy.set_printoptions(threshold=npy.inf)
@@ -996,7 +1001,9 @@ def pyrandaRestart(rootname,suffix=None,comm=None):
         dump = os.path.join(rootname, "restart_%s" % suffix )
 
     if not os.path.isdir( dump ):
-        self.iprint("Error: Cant read restart file %s" % dump)
+        print("Error: Cant read restart file %s" % dump)
+        # self.iprint("Error: Cant read restart file %s" % dump)
+        # TODO: Fix this iprint statement in an MPI robust way
         return None
 
     # Get serial data
@@ -1039,12 +1046,11 @@ def pyrandaRestart(rootname,suffix=None,comm=None):
     pysim = pyrandaSim(rootname,serial_data['mesh'])
 
     # Load packages
-    for pack in serial_data['packages']:            
-        ipack = pack.split('.')[1] 
-        exec("from pyranda import %s" % ipack ) # Edited by D. Lavacot 04/08/2022: change to "from pyranda import" 
-        pk = eval("%s(pysim)" % ipack ) 
-        #exec("import %s" % ipack )
-        #pk = eval("%s.%s(pysim)" % (ipack,ipack) )
+    for pack in serial_data['packages']:
+        ipack = pack.split('.')[-1]
+        package_module = import_module(pack)
+        package_class = getattr(package_module, ipack)
+        pk = package_class(pysim)
         pysim.addPackage( pk )
         message += "    package %s added \n" % ipack
 
@@ -1157,7 +1163,7 @@ def readChunk(pysim,procs,procMap,dump,serial_data):
 
             #pdata = self.readDataProc(time,iproc,variable)
             fid = open(os.path.join(dump,"proc-%s.bin" % str(iproc).zfill(5)))
-            DATA = numpy.reshape(numpy.fromfile( fid ),nshape,order='C')
+            DATA = numpy.reshape(numpy.fromfile( fid , dtype=numpy.float32),nshape,order='C')
                        
             #for ii in range(len(variable)):
             for var in serial_data['vars']:

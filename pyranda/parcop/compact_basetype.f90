@@ -11,7 +11,7 @@ module LES_compact_basetype
 
   integer :: directcom = 1
   
-  REAL(KIND=c_double), PARAMETER :: zero=0.0_c_double, one=1.0_c_double
+  Real(kind=c_float), PARAMETER :: zero=0.0_c_double, one=1.0_c_double
   LOGICAL(c_bool) :: debug=.false.
 
   TYPE compact_op1  ! one direction, generic
@@ -27,15 +27,15 @@ module LES_compact_basetype
     LOGICAL(c_bool) :: periodic  ! periodicity
     INTEGER(c_int), dimension(2) :: bc,range  ! 1D bcs, range
     INTEGER(c_int) :: hash,np,id,lo,hi  ! 1D comm data
-    real(KIND=c_double) :: d  ! nomimal grid spacing
-    real(KIND=c_double) :: sh = zero ! shift from base grid
-    real(kind=c_double), dimension(:,:), pointer :: art => null() ! transposed rhs (matrix compat.)
-    real(kind=c_double), dimension(:,:), pointer :: ar  => null() ! rhs
-    real(kind=c_double), dimension(:,:), pointer :: al  => null() ! lhs
-    real(kind=c_double), dimension(:,:), pointer :: sm  => null() ! lhs^1*rhs
-    real(kind=c_double), dimension(:,:), pointer :: smt => null() ! lhs^1*rhs transpose
-    real(kind=c_double), dimension(:,:), pointer :: rc  => null() ! rhs overlap 
-    real(kind=c_double), dimension(:,:,:,:), pointer :: aa => null() ! parallel weights
+    real(kind=c_float) :: d  ! nomimal grid spacing
+    real(kind=c_float) :: sh = zero ! shift from base grid
+    real(kind=c_float), dimension(:,:), pointer :: art => null() ! transposed rhs (matrix compat.)
+    real(kind=c_float), dimension(:,:), pointer :: ar  => null() ! rhs
+    real(kind=c_float), dimension(:,:), pointer :: al  => null() ! lhs
+    real(kind=c_float), dimension(:,:), pointer :: sm  => null() ! lhs^1*rhs
+    real(kind=c_float), dimension(:,:), pointer :: smt => null() ! lhs^1*rhs transpose
+    real(kind=c_float), dimension(:,:), pointer :: rc  => null() ! rhs overlap 
+    real(kind=c_float), dimension(:,:,:,:), pointer :: aa => null() ! parallel weights
   contains   ! generic
     procedure :: setup => setup_compact_op1
     procedure :: remove => remove_compact_op1
@@ -43,7 +43,7 @@ module LES_compact_basetype
 
   TYPE mesh1_type  ! 1D
     INTEGER(c_int) :: m,n                    ! mesh size  -> a[x,y,z], n[x,y,z]
-    real(kind=c_double) :: d,bv1,bvn         ! grid spacing/metric -> d[x,y,z], [x,y,z][1,n]
+    real(kind=c_float) :: d,bv1,bvn         ! grid spacing/metric -> d[x,y,z], [x,y,z][1,n]
     CHARACTER(KIND=c_char,LEN=4) :: bc1,bcn  ! boundary conditions (string) -> b[x,y,z][1,n]
   END TYPE mesh1_type
   
@@ -53,12 +53,12 @@ module LES_compact_basetype
   END TYPE comm1_type
   
 ! parallel overlap (mpi_allgather)
-  real(kind=8), dimension(:,:,:), allocatable :: dvopx,dvopy,dvopz
-  real(kind=8), dimension(:,:,:,:), allocatable :: dvox,dvoy,dvoz
+  real(kind=4), dimension(:,:,:), allocatable :: dvopx,dvopy,dvopz
+  real(kind=4), dimension(:,:,:,:), allocatable :: dvox,dvoy,dvoz
 ! halo buffer (mpi_sendrecv)
-  real(kind=8), dimension(:,:,:), allocatable :: vbr1x,vbr2x,vbs1x,vbs2x
-  real(kind=8), dimension(:,:,:), allocatable :: vbr1y,vbr2y,vbs1y,vbs2y
-  real(kind=8), dimension(:,:,:), allocatable :: vbr1z,vbr2z,vbs1z,vbs2z
+  real(kind=4), dimension(:,:,:), allocatable :: vbr1x,vbr2x,vbs1x,vbs2x
+  real(kind=4), dimension(:,:,:), allocatable :: vbr1y,vbr2y,vbs1y,vbs2y
+  real(kind=4), dimension(:,:,:), allocatable :: vbr1z,vbr2z,vbs1z,vbs2z
 
 contains
 
@@ -70,11 +70,11 @@ contains
     type(mesh1_type), intent(in) :: msh
     integer(c_int), intent(in) :: bc(2)
     logical(c_bool), intent(in) :: null_op
-    real(kind=8), dimension(:,:), allocatable :: gar
-    real(kind=8), dimension(:,:), allocatable :: gal
-    real(kind=8), dimension(:,:), allocatable :: al1,al2
-    real(kind=8), dimension(:,:), allocatable :: rop
-    real(kind=8), dimension(:,:,:), allocatable :: ro
+    real(kind=4), dimension(:,:), allocatable :: gar
+    real(kind=4), dimension(:,:), allocatable :: gal
+    real(kind=4), dimension(:,:), allocatable :: al1,al2
+    real(kind=4), dimension(:,:), allocatable :: rop
+    real(kind=4), dimension(:,:,:), allocatable :: ro
     integer :: m,n,np,nr,nl,ni,nol,nal,naa  ! local surrogates
     integer :: i,j
     ! free pre-existing setup
@@ -181,7 +181,7 @@ contains
       end do
       if( op%lo == MPI_PROC_NULL ) rop(1:nol,:) = zero
       if( op%hi == MPI_PROC_NULL ) rop(nol+1:ni,:) = zero
-      call mpi_allgather(rop,ni*ni,MPI_DOUBLE_PRECISION,ro,ni*ni,MPI_DOUBLE_PRECISION,op%hash,mpierr)
+      call mpi_allgather(rop,ni*ni,MPI_REAL,ro,ni*ni,MPI_REAL,op%hash,mpierr)
       op%aa = zero
       do j=0,np-1
         op%aa(:,nol+1:ni,1,j) = ro(:,1:nol,j)

@@ -5,16 +5,16 @@ module LES_compact_operators
   use LES_objects, only : compact_ops=>compact_ptr      ! , mesh_data=>mesh_ptr
 										
   IMPLICIT NONE
-  REAL(KIND=c_double), PARAMETER :: zero=0.0_c_double
+  Real(kind=c_float), PARAMETER :: zero=0.0_c_double
   INTEGER :: gpu_kernel = 1
   
 contains
 
   subroutine d1x(v,dv,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:),intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:),intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int), intent(in), optional :: bc
     integer(c_int) :: iop,i,j,k,ax,ay,az
     ax=size(v,1); ay=size(v,2); az=size(v,3)
@@ -51,9 +51,9 @@ contains
 
   subroutine d1y(v,dv,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:),intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:),intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int), intent(in), optional :: bc
     integer(c_int) :: iop,i,j,k,ax,ay,az
     !call exosm_annotation_begin("d1y")
@@ -90,9 +90,9 @@ contains
 
   subroutine d1z(v,dv,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in)  :: v
-    real(kind=c_double), dimension(:,:,:), intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in)  :: v
+    real(kind=c_float), dimension(:,:,:), intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int), intent(in), optional :: bc
     integer(c_int) :: iop,i,j,k,ax,ay,az
     !call exosm_annotation_begin("d1z")
@@ -129,9 +129,9 @@ contains
 
   subroutine d2x(v,dv,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:),intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:),intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int), intent(in), optional :: bc
     integer(c_int) :: iop,i,j,k,ax,ay,az
     ax=size(v,1); ay=size(v,2); az=size(v,3)
@@ -155,9 +155,9 @@ contains
 
   subroutine d2y(v,dv,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:),intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:),intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int), intent(in), optional :: bc
     integer(c_int) :: iop,i,j,k,ax,ay,az
     ax=size(v,1); ay=size(v,2); az=size(v,3)
@@ -181,9 +181,9 @@ contains
 
   subroutine d2z(v,dv,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in)  :: v
-    real(kind=c_double), dimension(:,:,:), intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in)  :: v
+    real(kind=c_float), dimension(:,:,:), intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int), intent(in), optional :: bc
     integer(c_int) :: iop,i,j,k,ax,ay,az
     ax=size(v,1); ay=size(v,2); az=size(v,3)
@@ -207,9 +207,9 @@ contains
 
   subroutine d4x(v,dv,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:),intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:),intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int), intent(in), optional :: bc
     integer(c_int) :: iop,i,j,k,ax,ay,az
     ax=size(v,1); ay=size(v,2); az=size(v,3)
@@ -231,9 +231,9 @@ contains
 
   subroutine d4y(v,dv,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:),intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:),intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int), intent(in), optional :: bc
     integer(c_int) :: iop,i,j,k,ax,ay,az
     ax=size(v,1); ay=size(v,2); az=size(v,3)
@@ -255,9 +255,9 @@ contains
 
   subroutine d4z(v,dv,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in)  :: v
-    real(kind=c_double), dimension(:,:,:), intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in)  :: v
+    real(kind=c_float), dimension(:,:,:), intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int), intent(in), optional :: bc
     integer(c_int) :: iop,i,j,k,ax,ay,az
     ax=size(v,1); ay=size(v,2); az=size(v,3)
@@ -279,9 +279,9 @@ contains
 
   subroutine d8x(v,dv,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:),intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:),intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int), intent(in), optional :: bc
     integer(c_int) :: iop,i,j,k,ax,ay,az
     !call exosm_annotation_begin("d8x")
@@ -314,9 +314,9 @@ contains
 
   subroutine d8y(v,dv,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:),intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:),intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int), intent(in), optional :: bc
     integer(c_int) :: iop,i,j,k,ax,ay,az
     !call exosm_annotation_begin("d8y")
@@ -349,9 +349,9 @@ contains
 
   subroutine d8z(v,dv,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in)  :: v
-    real(kind=c_double), dimension(:,:,:), intent(out) :: dv
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in)  :: v
+    real(kind=c_float), dimension(:,:,:), intent(out) :: dv
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int), intent(in), optional :: bc
     integer(c_int) :: iop,i,j,k,ax,ay,az
     !call exosm_annotation_begin("d8z")
@@ -384,11 +384,11 @@ contains
 
   subroutine filterx(v,fv,nf,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:),intent(out) :: fv
+    real(kind=c_float), dimension(:,:,:), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:),intent(out) :: fv
     integer(c_int), intent(in) :: nf
     integer(c_int), intent(in), optional :: bc
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int) :: iop,i,j,k,ax,ay,az
     !call exosm_annotation_begin("filterx")
     ax=size(v,1); ay=size(v,2); az=size(v,3)
@@ -422,11 +422,11 @@ contains
 
   subroutine filtery(v,fv,nf,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:),intent(out) :: fv
+    real(kind=c_float), dimension(:,:,:), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:),intent(out) :: fv
     integer(c_int), intent(in) :: nf
     integer(c_int), intent(in), optional :: bc
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int) :: iop,i,j,k,ax,ay,az
     !call exosm_annotation_begin("filtery")
     ax=size(v,1); ay=size(v,2); az=size(v,3)
@@ -460,11 +460,11 @@ contains
 
   subroutine filterz(v,fv,nf,bc,vb1,vb2)
     IMPLICIT NONE
-    real(kind=c_double), dimension(:,:,:), intent(in) :: v
-    real(kind=c_double), dimension(:,:,:),intent(out) :: fv
+    real(kind=c_float), dimension(:,:,:), intent(in) :: v
+    real(kind=c_float), dimension(:,:,:),intent(out) :: fv
     integer(c_int), intent(in) :: nf
     integer(c_int), intent(in), optional :: bc
-    real(kind=c_double), dimension(:,:,:), intent(in), optional :: vb1,vb2
+    real(kind=c_float), dimension(:,:,:), intent(in), optional :: vb1,vb2
     integer(c_int) :: iop,i,j,k,ax,ay,az
     !call exosm_annotation_begin("filterz")
     ax=size(v,1); ay=size(v,2); az=size(v,3)
